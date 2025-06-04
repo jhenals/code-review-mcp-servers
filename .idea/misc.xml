@@ -14,6 +14,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/shared/pom.xml" />
         <option value="$PROJECT_DIR$/test-coverage-server/pom.xml" />
       </set>
     </option>

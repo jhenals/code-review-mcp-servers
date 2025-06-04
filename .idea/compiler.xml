@@ -8,11 +8,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="static-analyzer-server" />
-        <module name="shared" />
         <module name="analyzer-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="shared" target="21" />
       <module name="test-coverage-server" target="21" />
     </bytecodeTargetLevel>
   </component>
