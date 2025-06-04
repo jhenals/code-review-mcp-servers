@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.analyzer_server.models.StaticAnalysisResult;
 import dev.jhenals.analyzer_server.models.Commit;
 import dev.jhenals.analyzer_server.models.PRInput;
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -18,48 +19,51 @@ import java.util.stream.Collectors;
 public class StaticAnalysisService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public StaticAnalysisResult analyzeCode(PRInput input) throws IOException {
+    public String analyzeCode(String javaSourceCode) throws IOException {
         StaticAnalysisResult result= new StaticAnalysisResult();
-        int numIssues=0;
+        // 1. Create temporary directory
+        File tempDir = Files.createTempDirectory("semgrep-src").toFile();
 
-        //1. Save diffs from commit as files in temp dir for SemgrepAnalysis
-        File tempDir = Files.createTempDirectory("pr-diffs").toFile();
-        for( Commit commit: input.getCommits() ){
-            String safeFileName = "commit_"+ commit.message.hashCode()+".diff";
-            File diffFile= new File(tempDir, safeFileName);
-            try(FileWriter fw= new FileWriter(diffFile)){
-                fw.write(commit.diff);
-            }
+        // 2. Create file and parent directories
+        File javaFile = new File(tempDir, "src/Main.java");
+        javaFile.getParentFile().mkdirs(); // ensure dirs exist
+
+        try (FileWriter writer = new FileWriter(javaFile)) {
+            writer.write(javaSourceCode);
         }
 
-        //2. Run Semgrep on the temp dir
-        String semgrepJson= runSemgrep(tempDir.getAbsolutePath());
+        // 3. Run Semgrep on the temp dir
+        String semgrepJson = runSemgrep(tempDir.getAbsolutePath()).toPrettyString();
 
-        //3. Parse Semgrep results and add to issues list
-        List<String> semgrepIssues=  parseSemgrepResults(semgrepJson);
-        numIssues += semgrepIssues.size();
-        result.issues.addAll(semgrepIssues);
+        // 4. Optional: parse results / log
+        // List<String> issues = parseSemgrepResults(semgrepJson);
 
-        //4. Clean up temp dir
+        // 5. Clean up
         deleteTempDirectory(tempDir);
-        return result;
+
+        return semgrepJson;
 
     }
 
-    private String runSemgrep(String directoryPath) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("semgrep", "--config", "auto", directoryPath, "--json");
+    private JsonNode runSemgrep(String directoryPath) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("semgrep",
+                "--config", "auto",
+                "--json",
+                "--quiet",
+                "--no-git-ignore",
+                directoryPath);
         pb.redirectErrorStream(true);
         Process process= pb.start();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String output = reader.lines().collect(Collectors.joining("\n"));
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                throw new IOException("Semgrep failed with exit code " + exitCode + ". Output:\n" + output);
+
+            // Try parsing clean JSON from the output
+            try {
+                return objectMapper.readTree(output);
+            } catch (JsonParseException e) {
+                throw new IOException("Failed to extract JSON from Semgrep output:\n" + output, e);
             }
-            return output;
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
 
     }
