@@ -1,0 +1,42 @@
+2025-06-03T11:44:40.158+02:00  INFO 21220 --- [static-analyzer-server] [main] d.j.s.StaticAnalyzerServerApplication    : Starting StaticAnalyzerServerApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 21220 (C:\.My_Projects\mcp\PrReviewAssistant\static-analyzer-server\target\static-analyzer-server-0.0.1-SNAPSHOT.jar started by subol in C:\.My_Projects\mcp\PrReviewAssistant)
+2025-06-03T11:44:40.161+02:00  INFO 21220 --- [static-analyzer-server] [main] d.j.s.StaticAnalyzerServerApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-06-03T11:44:40.827+02:00  WARN 21220 --- [static-analyzer-server] [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'staticAnalyzerTools' defined in dev.jhenals.static_analyzer_server.StaticAnalyzerServerApplication: Unsatisfied dependency expressed through method 'staticAnalyzerTools' parameter 0: No qualifying bean of type 'dev.jhenals.static_analyzer_server.service.StaticAnalyzerService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2025-06-03T11:44:40.837+02:00  INFO 21220 --- [static-analyzer-server] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-06-03T11:44:40.867+02:00 ERROR 21220 --- [static-analyzer-server] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of method staticAnalyzerTools in dev.jhenals.static_analyzer_server.StaticAnalyzerServerApplication required a bean of type 'dev.jhenals.static_analyzer_server.service.StaticAnalyzerService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'dev.jhenals.static_analyzer_server.service.StaticAnalyzerService' in your configuration.
+
+2025-06-03T11:59:16.782+02:00  INFO 37056 --- [static-analyzer-server] [main] d.j.s.StaticAnalyzerServerApplication    : Starting StaticAnalyzerServerApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 37056 (C:\.My_Projects\mcp\PrReviewAssistant\static-analyzer-server\target\static-analyzer-server-0.0.1-SNAPSHOT.jar started by subol in C:\.My_Projects\mcp\PrReviewAssistant)
+2025-06-03T11:59:16.786+02:00  INFO 37056 --- [static-analyzer-server] [main] d.j.s.StaticAnalyzerServerApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-06-03T11:59:17.585+02:00  WARN 37056 --- [static-analyzer-server] [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'staticAnalyzerTools' defined in dev.jhenals.static_analyzer_server.StaticAnalyzerServerApplication: Unsatisfied dependency expressed through method 'staticAnalyzerTools' parameter 0: No qualifying bean of type 'dev.jhenals.static_analyzer_server.service.StaticAnalyzerService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2025-06-03T11:59:17.598+02:00  INFO 37056 --- [static-analyzer-server] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-06-03T11:59:17.637+02:00 ERROR 37056 --- [static-analyzer-server] [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of method staticAnalyzerTools in dev.jhenals.static_analyzer_server.StaticAnalyzerServerApplication required a bean of type 'dev.jhenals.static_analyzer_server.service.StaticAnalyzerService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'dev.jhenals.static_analyzer_server.service.StaticAnalyzerService' in your configuration.
+
