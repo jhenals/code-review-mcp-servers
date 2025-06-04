@@ -3,6 +3,7 @@ package dev.jhenals.analyzer_server.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.jhenals.analyzer_server.models.Issue;
 import dev.jhenals.analyzer_server.models.StaticAnalysisResult;
 import dev.jhenals.analyzer_server.models.Commit;
 import dev.jhenals.analyzer_server.models.PRInput;
@@ -13,13 +14,14 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class StaticAnalysisService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String analyzeCode(String javaSourceCode) throws IOException {
+    public List<Issue> analyzeCode(String javaSourceCode) throws IOException {
         StaticAnalysisResult result= new StaticAnalysisResult();
         // 1. Create temporary directory
         File tempDir = Files.createTempDirectory("semgrep-src").toFile();
@@ -33,15 +35,15 @@ public class StaticAnalysisService {
         }
 
         // 3. Run Semgrep on the temp dir
-        String semgrepJson = runSemgrep(tempDir.getAbsolutePath()).toPrettyString();
+        JsonNode semgrepJson = runSemgrep(tempDir.getAbsolutePath());
 
-        // 4. Optional: parse results / log
-        // List<String> issues = parseSemgrepResults(semgrepJson);
+        // 4. Parse results / log
+        List<Issue> issues = parseSemgrepResults(semgrepJson);
 
         // 5. Clean up
         deleteTempDirectory(tempDir);
 
-        return semgrepJson;
+        return issues;
 
     }
 
@@ -68,26 +70,50 @@ public class StaticAnalysisService {
 
     }
 
-    private List<String> parseSemgrepResults(String semgrepJson) throws JsonProcessingException {
-        List<String> issues = new ArrayList<>();
-        JsonNode root = objectMapper.readTree(semgrepJson);
-        JsonNode results = root.get("results");
+    private List<Issue> parseSemgrepResults(JsonNode semgrepJson) throws JsonProcessingException {
+        List<Issue> issues = new ArrayList<>();
+        JsonNode results = semgrepJson.get("results");
+        if (results == null || !results.isArray()) return issues;
 
-        if (results == null || !results.isArray() || results.size() == 0) {
-            return issues; // no issues
-        }
+        for (JsonNode r : results) {
+            Issue gi = new Issue();
 
-        for (JsonNode issue : results) {
-            String checkId = issue.path("check_id").asText("N/A");
-            String path = issue.path("path").asText("unknown");
-            int line = issue.path("start").path("line").asInt(-1);
-            String message = issue.path("extra").path("message").asText("No message");
+            JsonNode extra = r.path("extra");
+            JsonNode metadata = extra.path("metadata");
+            gi.issueType = toTitleCase(metadata.path("category").asText(null));
+            gi.ruleId = r.path("check_id").asText(null);
+            gi.filePath = r.path("path").asText(null);
+            gi.line = r.path("start").path("line").asInt(-1);
+            gi.codeSnippet = extra.path("lines").asText(null);
+            gi.message = extra.path("message").asText(null);
+            gi.severity = Optional.ofNullable(metadata.path("severity").asText(null)).orElse("UNKNOWN");
+            gi.remediation = generateRemediation(gi.message);
+            gi.references = new ArrayList<>();
+            metadata.path("references").forEach(ref -> gi.references.add(ref.asText()));
+            gi.tags = new ArrayList<>();
+            if (metadata.has("category")) gi.tags.add(metadata.get("category").asText());
+            if (metadata.has("cwe")) metadata.get("cwe").forEach(cwe -> gi.tags.add(cwe.asText()));
 
-            issues.add(String.format("[Semgrep][%s] %s:%d - %s", checkId, path, line, message));
+            issues.add(gi);
         }
 
         return issues;
     }
+
+
+    private String toTitleCase(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+    private String generateRemediation(String message) {
+        if (message == null) return null;
+        if (message.toLowerCase().contains("aes")) {
+            return "Use AES/CBC/PKCS7PADDING instead of default AES mode.";
+        }
+        return "Review the issue and apply best practices.";
+    }
+
 
     private void deleteTempDirectory(File tempDir) {
         File[] allContents= tempDir.listFiles();
