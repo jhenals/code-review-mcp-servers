@@ -13,4 +13,10 @@ public class PRInput {
     public String title;
     public String description;
     public List<Commit> commits;
+
+    public PRInput(String title, String description, List<Commit> commits) {
+        this.title= title;
+        this.description= description;
+        this.commits = commits;
+    }
 }
