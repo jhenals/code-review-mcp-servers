@@ -1,17 +1,15 @@
 package dev.jhenals.analyzer_server.tools;
 
-import dev.jhenals.analyzer_server.models.SecurityScannerResult;
-import dev.jhenals.analyzer_server.models.StaticAnalysisResult;
-import dev.jhenals.analyzer_server.models.TestCoverageResult;
+import dev.jhenals.analyzer_server.models.*;
 import dev.jhenals.analyzer_server.service.SecurityScannerService;
 import dev.jhenals.analyzer_server.service.StaticAnalysisService;
 import dev.jhenals.analyzer_server.service.TestCoverageService;
-import dev.jhenals.analyzer_server.models.PRInput;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class ToolHandler {
@@ -26,7 +24,7 @@ public class ToolHandler {
     private SecurityScannerService securityScannerService;
 
     @Tool(name = "analyze_code", description = "Performs static analysis of code")
-    public StaticAnalysisResult analyzeCode(PRInput input) throws IOException {
+    public List<Issue> analyzeCode(String input) throws IOException {
         return this.staticAnalysisService.analyzeCode(input);
     }
 
