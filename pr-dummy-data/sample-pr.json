@@ -1,0 +1,15 @@
+{
+  "title": "Improve login error handling",
+  "description": "Fixes bug #42 and adds localized messages.",
+  "commits": [
+    {
+      "message": "fix: null check in LoginService",
+      "diff": "diff --git a/LoginService.java b/LoginService.java\n- if (user != null) {\n+ if (user != null && user.isActive()) {"
+    },
+    {
+      "message": "feat: add error message translations",
+      "diff": "diff --git a/ErrorMessages.java b/ErrorMessages.java\n+ private String getLocalizedMessage(...) {...}"
+    }
+  ]
+}
+
