@@ -10,8 +10,8 @@
 
 	<artifactId>static-analyzer-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>static-analyzer-server</name>
-	<description>Server for syntax-level review</description>
+	<name>analyzer-server</name>
+	<description>MCP server for static analysis</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -40,6 +40,8 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -58,6 +60,13 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

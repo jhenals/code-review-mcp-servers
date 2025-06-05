@@ -1,6 +1,6 @@
-package dev.jhenals.analyzer_server;
+package dev.jhenals.static_analyzer_server;
 
-import dev.jhenals.analyzer_server.tools.ToolHandler;
+import dev.jhenals.static_analyzer_server.tools.ToolHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.ToolCallbackProvider;

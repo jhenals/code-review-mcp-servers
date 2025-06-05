@@ -1,9 +1,9 @@
-package dev.jhenals.analyzer_server;
+package dev.jhenals.static_analyzer_server;
 
-import dev.jhenals.analyzer_server.models.Commit;
-import dev.jhenals.analyzer_server.models.PRInput;
-import dev.jhenals.analyzer_server.models.StaticAnalysisResult;
-import dev.jhenals.analyzer_server.service.StaticAnalysisService;
+import dev.jhenals.static_analyzer_server.models.Commit;
+import dev.jhenals.static_analyzer_server.models.PRInput;
+import dev.jhenals.static_analyzer_server.models.StaticAnalysisResult;
+import dev.jhenals.static_analyzer_server.service.StaticAnalysisService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

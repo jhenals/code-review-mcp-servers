@@ -11,7 +11,8 @@
     <description>Simple PR review Assistant using MCP</description>
 
     <modules>
-        <module>analyzer-server</module>
+        <module>static-analyzer-server</module>
+        <module>test-generator-server</module>
         <!-- add other modules as needed -->
     </modules>
 

@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/shared/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/analyzer-server/pom.xml" />
+        <option value="$PROJECT_DIR$/test-generator-server/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

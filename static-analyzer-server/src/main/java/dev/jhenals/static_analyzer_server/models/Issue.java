@@ -1,4 +1,4 @@
-package dev.jhenals.analyzer_server.models;
+package dev.jhenals.static_analyzer_server.models;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,24 +6,24 @@ import lombok.Setter;
 
 import java.util.List;
 
-@NoArgsConstructor
-@Getter
 @Setter
-public class Issue {
-    public String issueType;
-    public String ruleId;
-    public String filePath;
-    public int line;
-    public String codeSnippet;
-    public String message;
-    public String severity;
-    public String remediation;
-    public List<String> references;
-    public List<String> tags;
+@Getter
+@NoArgsConstructor
+public class Issue{
+    private String issueType;
+    private String ruleId;
+    private String filePath;
+    private int line;
+    private String codeSnippet;
+    private String message;
+    private String severity;
+    private String remediation;
+    private List<String> references;
+    private List<String> tags;
 
     @Override
     public String toString() {
-        return "***Issue{" +
+        return "Issue{" +
                 "issueType='" + issueType + '\'' + "\n"+
                 ", ruleId='" + ruleId + '\'' + "\n"+
                 ", filePath='" + filePath + '\'' + "\n"+
