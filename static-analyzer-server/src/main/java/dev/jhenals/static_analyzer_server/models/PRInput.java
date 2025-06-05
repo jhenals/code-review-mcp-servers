@@ -1,4 +1,4 @@
-package dev.jhenals.analyzer_server.models;
+package dev.jhenals.static_analyzer_server.models;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

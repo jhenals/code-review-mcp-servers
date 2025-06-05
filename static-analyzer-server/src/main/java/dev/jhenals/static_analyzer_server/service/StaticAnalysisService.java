@@ -1,12 +1,10 @@
-package dev.jhenals.analyzer_server.service;
+package dev.jhenals.static_analyzer_server.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.jhenals.analyzer_server.models.Issue;
-import dev.jhenals.analyzer_server.models.StaticAnalysisResult;
-import dev.jhenals.analyzer_server.models.Commit;
-import dev.jhenals.analyzer_server.models.PRInput;
+import dev.jhenals.static_analyzer_server.models.Issue;
+import dev.jhenals.static_analyzer_server.models.StaticAnalysisResult;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +19,7 @@ import java.util.stream.Collectors;
 public class StaticAnalysisService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public List<Issue> analyzeCode(String javaSourceCode) throws IOException {
+    public String analyzeCode(String javaSourceCode) throws IOException {
         StaticAnalysisResult result= new StaticAnalysisResult();
         // 1. Create temporary directory
         File tempDir = Files.createTempDirectory("semgrep-src").toFile();
@@ -43,7 +41,7 @@ public class StaticAnalysisService {
         // 5. Clean up
         deleteTempDirectory(tempDir);
 
-        return issues;
+        return semgrepJson.toPrettyString();
 
     }
 
@@ -80,19 +78,19 @@ public class StaticAnalysisService {
 
             JsonNode extra = r.path("extra");
             JsonNode metadata = extra.path("metadata");
-            gi.issueType = toTitleCase(metadata.path("category").asText(null));
-            gi.ruleId = r.path("check_id").asText(null);
-            gi.filePath = r.path("path").asText(null);
-            gi.line = r.path("start").path("line").asInt(-1);
-            gi.codeSnippet = extra.path("lines").asText(null);
-            gi.message = extra.path("message").asText(null);
-            gi.severity = Optional.ofNullable(metadata.path("severity").asText(null)).orElse("UNKNOWN");
-            gi.remediation = generateRemediation(gi.message);
-            gi.references = new ArrayList<>();
-            metadata.path("references").forEach(ref -> gi.references.add(ref.asText()));
-            gi.tags = new ArrayList<>();
-            if (metadata.has("category")) gi.tags.add(metadata.get("category").asText());
-            if (metadata.has("cwe")) metadata.get("cwe").forEach(cwe -> gi.tags.add(cwe.asText()));
+            gi.setIssueType(toTitleCase(metadata.path("category").asText(null)));
+            gi.setRuleId(r.path("check_id").asText(null));
+            gi.setFilePath(r.path("path").asText(null));
+            gi.setLine(r.path("start").path("line").asInt(-1));
+            gi.setCodeSnippet(extra.path("lines").asText(null));
+            gi.setMessage(extra.path("message").asText(null));
+            gi.setSeverity(Optional.ofNullable(metadata.path("severity").asText(null)).orElse("UNKNOWN"));
+            gi.setRemediation(generateRemediation(gi.getMessage()));
+            gi.setReferences(new ArrayList<>());
+            metadata.path("references").forEach(ref -> gi.getReferences().add(ref.asText()));
+            gi.setTags(new ArrayList<>());
+            if (metadata.has("category")) gi.getTags().add(metadata.get("category").asText());
+            if (metadata.has("cwe")) metadata.get("cwe").forEach(cwe -> gi.getTags().add(cwe.asText()));
 
             issues.add(gi);
         }
