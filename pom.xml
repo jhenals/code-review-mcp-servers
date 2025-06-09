@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>ai-code-review-assistant</name>
-    <description>SimpleCode review Assistant using MCP</description>
+    <description>Simple Code review Assistant using MCP</description>
 
     <modules>
         <module>mcp-semgrep-server</module>
