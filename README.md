@@ -1,1 +1,1 @@
-# mcp-code-review-assistant
+# MCP Code Review Assistant
