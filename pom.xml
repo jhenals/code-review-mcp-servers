@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dev.jhenals</groupId>
-    <artifactId>pr-review-assistant</artifactId>
+    <artifactId>ai-code-review-assistant</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>pr-review-assistant</name>
-    <description>Simple PR review Assistant using MCP</description>
+    <name>ai-code-review-assistant</name>
+    <description>SimpleCode review Assistant using MCP</description>
 
     <modules>
         <module>mcp-semgrep-server</module>

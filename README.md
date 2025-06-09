@@ -1,1 +1,1 @@
-# mcp-pr-review-assistant
+# mcp-code-review-assistant
