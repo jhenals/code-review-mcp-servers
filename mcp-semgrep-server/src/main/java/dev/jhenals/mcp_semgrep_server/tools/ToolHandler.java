@@ -48,8 +48,4 @@ public class ToolHandler {
         return this.semgrepService.getSemgrepRuleSchema(ruleId);
     }
 
-
-
-
-
 }

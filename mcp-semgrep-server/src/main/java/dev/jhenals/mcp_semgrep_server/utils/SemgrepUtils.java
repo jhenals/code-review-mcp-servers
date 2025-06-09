@@ -1,20 +1,20 @@
 package dev.jhenals.mcp_semgrep_server.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
 import dev.jhenals.mcp_semgrep_server.models.SemgrepScanResult;
+import org.springframework.boot.json.JsonParseException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 
-public class Utils {
+public class SemgrepUtils {
 
     private static String safeJoin(String baseDir, String untrustedPath) throws McpError{
         try{
@@ -26,7 +26,7 @@ public class Utils {
             }
 
             if(Paths.get(untrustedPath).isAbsolute()){
-                throw new McpError("INVALID_PARAMS", "Uuntrusted path must be relative");
+                throw new McpError("INVALID_PARAMS", "Untrusted path must be relative");
             }
 
             Path fullPath= basePath.resolve(untrustedPath).normalize();
@@ -133,24 +133,23 @@ public class Utils {
 
     public static String createTempFilesFromCodeContent(List<CodeFile> codeFiles) throws McpError{
         try {
-            Path tempDir = Files.createTempDirectory("semgrep_scan_");
+            File tempDir = Files.createTempDirectory("semgrep_scan_").toFile();
 
             for (CodeFile fileInfo : codeFiles) {
                 if (fileInfo.getFilename() == null || fileInfo.getFilename().isEmpty()) {
                     continue;
+                }else{
+                      File javaFile = new File(tempDir, fileInfo.getFilename());
+                      javaFile.getParentFile().mkdirs(); // ensure dirs exist
+
+                    try (FileWriter writer = new FileWriter(javaFile)) {
+                        writer.write(fileInfo.getContent());
+                    } catch (IOException ex) {
+                        throw new McpError("INTERNAL_ERROR", "Failed to write file: " + javaFile.getAbsolutePath());
+                    }
                 }
-
-                String tempFilePath = safeJoin(tempDir.toString(), fileInfo.getFilename());
-                Path filePath = Paths.get(tempFilePath);
-
-                // Create parent directories
-                Files.createDirectories(filePath.getParent());
-
-                // Write content to file
-                Files.write(filePath, fileInfo.getContent().getBytes());
             }
-
-            return tempDir.toString();
+        return tempDir.getAbsolutePath();
         } catch (IOException e) {
             throw new McpError("INTERNAL_ERROR",
                     "Failed to create temporary files: " + e.getMessage());
@@ -158,29 +157,51 @@ public class Utils {
     }
 
     public static List<String> getSemgrepScanArgs(String tempDir, String config) {
-        List<String> args = new ArrayList<>(Arrays.asList("scan", "--json", "--experimental"));
-        if (config != null) {
-            args.add("--config");
-            args.add(config);
-        }
+        List<String> args = new ArrayList<>(Arrays.asList("semgrep",
+                "--json",
+                "--quiet",
+                "--no-git-ignore"));
+        args.add("--config");
+        args.add(config);
         args.add(tempDir);
         return args;
     }
 
     public static void validateCodeFiles(List<CodeFile> codeFiles) throws McpError {
         if (codeFiles == null || codeFiles.isEmpty()) {
-            throw new McpError("INVALID_PARAMS",
-                    "code_files must be a non-empty list of file objects");
+            throw new McpError("INVALID_PARAMS", "code_files must be a non-empty list of file objects");
         }
 
         for (CodeFile file : codeFiles) {
             if (file.getFilename() == null || file.getContent() == null) {
-                throw new McpError("INVALID_PARAMS",
-                        "Each code file must have filename and content");
+
+                throw new McpError("INVALID_PARAMS", "Each code file must have filename and content");
             }
             if (Paths.get(file.getFilename()).isAbsolute()) {
-                throw new McpError("INVALID_PARAMS",
-                        "code_files.filename must be a relative path");
+                throw new McpError("INVALID_PARAMS","code_files.filename must be a relative path");
+            }
+        }
+    }
+
+    public static String runSemgrepDefault(String directoryPath) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("semgrep",
+                "--config", "auto",
+                "--json",
+                "--quiet",
+                "--no-git-ignore",
+                directoryPath);
+        pb.redirectErrorStream(true);
+        Process process= pb.start();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String output = reader.lines().collect(Collectors.joining("\n"));
+
+            // Try parsing clean JSON from the output
+            try {
+                ObjectMapper objectMapper= new ObjectMapper();
+                return objectMapper.readTree(output).toPrettyString();
+            } catch (JsonParseException e) {
+                throw new IOException("Failed to extract JSON from Semgrep output:\n" + output, e);
             }
         }
     }
@@ -188,12 +209,12 @@ public class Utils {
     public static String runSemgrep(List<String> args, String semgrepExecutable, ReentrantLock semgrepLock) throws McpError {
         try {
             String semgrepPath = ensureSemgrepAvailable(semgrepExecutable, semgrepLock);
-
             List<String> command = new ArrayList<>();
             command.add(semgrepPath);
             command.addAll(args);
 
             ProcessBuilder pb = new ProcessBuilder(command);
+            pb.redirectErrorStream(true);
             Process process = pb.start();
 
             // Read output
@@ -215,6 +236,8 @@ public class Utils {
             }
 
             int exitCode = process.waitFor();
+            System.out.println("[DEBUG] Process exited with code: " + exitCode);
+
             if (exitCode != 0) {
                 throw new McpError("INTERNAL_ERROR",
                         "Error running semgrep: (" + exitCode + ") " + stderr.toString());

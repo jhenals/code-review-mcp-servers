@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.models.SemgrepSecurityCheckResult;
 import dev.jhenals.mcp_semgrep_server.models.*;
 import dev.jhenals.mcp_semgrep_server.utils.McpError;
-import dev.jhenals.mcp_semgrep_server.utils.Utils;
+import dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -18,7 +18,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.time.Duration;
 
-import static dev.jhenals.mcp_semgrep_server.utils.Utils.*;
+import static dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils.*;
+import static dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils.validateCodeFiles;
 
 @Service
 public class SemgrepService {
@@ -26,14 +27,16 @@ public class SemgrepService {
     // Global state
     private static final String semgrepExecutable = null;
     private static final ReentrantLock semgrepLock = new ReentrantLock();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private static final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(30))
             .build();
 
     private String runSemgrep(List<String> args) throws McpError {
-        return Utils.runSemgrep(args, semgrepExecutable, semgrepLock);
+        String result= SemgrepUtils.runSemgrep(args, semgrepExecutable, semgrepLock);
+        System.out.println(result);
+        return result;
     }
 
     public SemgrepResult semgrepScan(Map<String, Object> input){
@@ -49,14 +52,19 @@ public class SemgrepService {
             }
 
             config = validateConfig(config);
-            validateCodeFiles(codeFiles);
+            //validateCodeFiles(codeFiles);
 
             tempDir= createTempFilesFromCodeContent(codeFiles);
             List<String> args= getSemgrepScanArgs(tempDir, config);
-            String output= runSemgrep(args);
+
+
+            //TODO: change runSemgrepDefault to runSemgrep
+            String output= runSemgrepDefault(tempDir);
+
+            //String output= runSemgrep(args);
 
             SemgrepScanResult results= objectMapper.readValue(output, SemgrepScanResult.class);
-            removeTempDirFromResults(results, tempDir);
+            //removeTempDirFromResults(results, tempDir);
 
             return SemgrepResult.scanSuccess(results);
         } catch (McpError e) {
@@ -90,7 +98,7 @@ public class SemgrepService {
             Files.write(Paths.get(ruleFilePath), rule.getBytes());
 
             List<String> args = getSemgrepScanArgs(tempDir, ruleFilePath);
-            String output = runSemgrep(args);
+            String output = runSemgrepDefault(tempDir);
 
             SemgrepScanResult results = objectMapper.readValue(output, SemgrepScanResult.class);
             removeTempDirFromResults(results, tempDir);
@@ -117,6 +125,7 @@ public class SemgrepService {
                 codeFiles.add(new CodeFile(fileData.get("filename"), fileData.get("content")));
             }
 
+            System.out.println("[DEBUG]: is codeFiles empty?" + codeFiles.isEmpty());
             validateCodeFiles(codeFiles);
 
             tempDir = createTempFilesFromCodeContent(codeFiles);
