@@ -1,11 +1,12 @@
 package dev.jhenals.mcp_semgrep_server.tools;
 
+import dev.jhenals.mcp_semgrep_server.models.SemgrepResult;
 import dev.jhenals.mcp_semgrep_server.service.SemgrepService;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.util.Map;
 
 @Component
 public class ToolHandler {
@@ -13,9 +14,13 @@ public class ToolHandler {
     @Autowired
     private SemgrepService semgrepService;
 
-    @Tool(name = "analyze_code", description = "Performs static analysis of code")
-    public String analyzeCode(String input) throws IOException {
-        return this.semgrepService.analyzeCode(input);
+    @Tool(name = "semgrep_scan", description = "Performs general code scanning with configurable rulesets")
+    public SemgrepResult semgrepScan(Map<String, Object> input){
+        return this.semgrepService.semgrepScan(input);
     }
+
+
+
+
 
 }

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-//TODO: I can use a DP here
+//TODO: I can use a DP here : Wrapper Pattern
 
 @AllArgsConstructor
 public class SemgrepResult {

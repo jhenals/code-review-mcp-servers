@@ -1,7 +1,6 @@
 package dev.jhenals.mcp_semgrep_server.utils;
 
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
-import dev.jhenals.mcp_semgrep_server.models.McpError;
 import dev.jhenals.mcp_semgrep_server.models.SemgrepScanResult;
 
 import java.io.BufferedReader;
