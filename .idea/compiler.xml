@@ -12,14 +12,9 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="shared" target="21" />
-      <module name="test-coverage-server" target="21" />
+      <module name="PrReviewAssistant" target="21" />
+      <module name="static-analyzer-server" target="21" />
+      <module name="test-generator-server" target="21" />
     </bytecodeTargetLevel>
-  </component>
-  <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="mcp-semgrep-server" options="" />
-      <module name="test-coverage-server" options="" />
-    </option>
   </component>
 </project>

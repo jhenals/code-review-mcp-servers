@@ -1,4 +1,4 @@
-package dev.jhenals.mcp_semgrep_server;
+package dev.jhenals.mcp_semgrep_server.models;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

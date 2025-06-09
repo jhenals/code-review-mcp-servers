@@ -1,18 +1,22 @@
 package dev.jhenals.mcp_semgrep_server.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.jhenals.mcp_semgrep_server.SemgrepSecurityCheckResult;
+import dev.jhenals.mcp_semgrep_server.models.SemgrepSecurityCheckResult;
 import dev.jhenals.mcp_semgrep_server.models.*;
 import dev.jhenals.mcp_semgrep_server.utils.McpError;
 import dev.jhenals.mcp_semgrep_server.utils.Utils;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.time.Duration;
 
 import static dev.jhenals.mcp_semgrep_server.utils.Utils.*;
 
@@ -22,20 +26,16 @@ public class SemgrepService {
     // Global state
     private static volatile String semgrepExecutable = null;
     private static final ReentrantLock semgrepLock = new ReentrantLock();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-
-    public String getSemgrepRuleSchema(){
-        return null;
-        //TODO
-    }
+    private static final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(30))
+            .build();
 
     private String runSemgrep(List<String> args) throws McpError {
         return Utils.runSemgrep(args, semgrepExecutable, semgrepLock);
     }
 
-    //TODO: use generics (<T>) instead of Object (root of hierarchy)
     public SemgrepResult semgrepScan(Map<String, Object> input){
         String tempDir= null;
         try{
@@ -68,7 +68,7 @@ public class SemgrepService {
         }
     }
 
-    public SemgrepResult semgrepScanWithCustomeRule(Map<String, Object> input){
+    public SemgrepResult semgrepScanWithCustomRule(Map<String, Object> input){
         String tempDir =  null;
 
         try {
@@ -149,7 +149,7 @@ public class SemgrepService {
         }
     }
 
-    public List<String> getSupportLanguages() throws McpError {
+    public List<String> getSupportedLanguages() throws McpError {
         List<String> args = Arrays.asList("show", "supported-languages", "--experimental");
         String output = runSemgrep(args);
 
@@ -159,18 +159,18 @@ public class SemgrepService {
                 .collect(Collectors.toList());
     }
 
-    public Map<String,String> getAbstractSyntaxTree(CodeWithLanguage input) {
+    public Map<String,String> getAbstractSyntaxTree(CodeWithLanguage code) {
         String tempDir = null;
         try {
             tempDir = Files.createTempDirectory("semgrep_ast_").toString();
             String tempFilePath = Paths.get(tempDir, "code.txt").toString();
 
-            Files.write(Paths.get(tempFilePath), input.getContent().getBytes());
+            Files.write(Paths.get(tempFilePath), code.getContent().getBytes());
 
             List<String> args = Arrays.asList(
                     "--experimental",
                     "--dump-ast",
-                    "-l", input.getLanguage(),
+                    "-l", code.getLanguage(),
                     "--json",
                     tempFilePath
             );
@@ -181,6 +181,26 @@ public class SemgrepService {
             return Map.of("error", "INTERNAL_ERROR", "message", e.getMessage());
         } finally {
             cleanupTempDir(tempDir);
+        }
+    }
+
+    public Map<String, String> getSemgrepRuleSchema(String ruleId){
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://semgrep.dev/c/r/" + ruleId))
+                    .timeout(Duration.ofSeconds(30))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request,
+                    HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                return Map.of("error", "Error loading rule: HTTP " + response.statusCode());
+            }
+
+            return Map.of("Rule-"+ruleId, response.body());
+        } catch (Exception e) {
+            return Map.of("error","Error loading rule: " + e.getMessage());
         }
     }
 

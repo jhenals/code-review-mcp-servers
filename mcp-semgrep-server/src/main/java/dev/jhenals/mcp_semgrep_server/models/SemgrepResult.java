@@ -1,9 +1,6 @@
 package dev.jhenals.mcp_semgrep_server.models;
 
-import dev.jhenals.mcp_semgrep_server.SemgrepSecurityCheckResult;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
 //TODO: I can use a DP here : Wrapper Pattern
 
