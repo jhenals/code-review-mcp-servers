@@ -22,7 +22,7 @@ public class ToolHandler {
         return this.semgrepService.semgrepScan(input);
     }
 
-    @Tool(name = "semgrep_scan", description = "Performs code scanning with user-provided YAML rules")
+    @Tool(name = "semgrep_scan_with_custom_result", description = "Performs code scanning with user-provided YAML rules")
     public SemgrepResult semgrepScanWithCustomResult(Map<String,Object> input){
         return this.semgrepService.semgrepScanWithCustomRule(input);
     }

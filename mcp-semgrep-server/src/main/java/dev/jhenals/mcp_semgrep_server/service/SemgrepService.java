@@ -24,7 +24,7 @@ import static dev.jhenals.mcp_semgrep_server.utils.Utils.*;
 public class SemgrepService {
 
     // Global state
-    private static volatile String semgrepExecutable = null;
+    private static final String semgrepExecutable = null;
     private static final ReentrantLock semgrepLock = new ReentrantLock();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -62,7 +62,7 @@ public class SemgrepService {
         } catch (McpError e) {
             return SemgrepResult.error(e.getCode(), e.getMessage());
         }catch (Exception e){
-            return SemgrepResult.error("INERNAL_ERROR", e.getMessage());
+            return SemgrepResult.error("INTERNAL_ERROR", e.getMessage());
         }finally {
             cleanupTempDir(tempDir);
         }

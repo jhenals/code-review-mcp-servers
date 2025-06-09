@@ -3,20 +3,40 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <groupId>dev.jhenals</groupId>
-        <artifactId>ai-code-review-assistant</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
+    <groupId>dev.jhenals</groupId>
     <artifactId>mcp-test-generator-server</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <name>mcp-test-generator-server</name>
+    <description>MCP server for test generation</description>
+    <url/>
+    <licenses>
+        <license/>
+    </licenses>
+    <developers>
+        <developer/>
+    </developers>
+    <scm>
+        <connection/>
+        <developerConnection/>
+        <tag/>
+        <url/>
+    </scm>
+
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-ai.version>1.0.0</spring-ai.version>
-
     </properties>
 
     <dependencies>
@@ -31,6 +51,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.38</version>
+        </dependency>
 
     </dependencies>
     <dependencyManagement>
@@ -50,13 +76,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

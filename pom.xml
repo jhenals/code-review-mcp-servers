@@ -7,6 +7,8 @@
     <artifactId>ai-code-review-assistant</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+
     <name>ai-code-review-assistant</name>
     <description>Simple Code review Assistant using MCP</description>
 
@@ -18,30 +20,12 @@
 
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
-        </dependency>
     </dependencies>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.2.5</version> <!-- Use a stable Spring Boot version -->
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+
 
 </project>
