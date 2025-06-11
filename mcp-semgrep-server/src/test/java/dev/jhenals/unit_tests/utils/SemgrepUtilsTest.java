@@ -1,10 +1,10 @@
 package dev.jhenals.unit_tests.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
 import dev.jhenals.mcp_semgrep_server.models.SemgrepToolResult;
 import dev.jhenals.mcp_semgrep_server.service.StaticAnalysisService;
+import dev.jhenals.mcp_semgrep_server.utils.McpError;
 import dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,17 +31,18 @@ import static org.mockito.Mockito.times;
 @SpringBootTest(classes = SemgrepUtils.class)
 public class SemgrepUtilsTest {
 
-    private SemgrepUtils semgrepUtils;
     private StaticAnalysisService staticAnalysisService;
-    private CodeFile codeFile= new CodeFile();
+
+    private CodeFile codeFile = new CodeFile();
     private Map<String, Object> input;
+
+    private static final String PARAM_NAME = "config";
+
 
     @BeforeEach
     void setUp() {
-        semgrepUtils = spy(new SemgrepUtils());
-        staticAnalysisService= spy(new StaticAnalysisService());
-        ObjectMapper objectMapper = spy(new ObjectMapper());
-        codeFile=  new CodeFile("TestFile.java", "public class Test {}");
+        staticAnalysisService = spy(new StaticAnalysisService());
+        codeFile = new CodeFile("TestFile.java", "public class Test {}");
         input = Map.of(
                 "code_file", Map.of("filename", "Test.java", "content", "public class Test {}"),
                 "config", "auto"
@@ -49,7 +50,7 @@ public class SemgrepUtilsTest {
     }
 
     @Test
-    public void testCreateTemporaryFileWritesContent(@TempDir Path tempDir) throws IOException {
+    public void testCreateTemporaryFileWritesContent() throws IOException {
         File tempFile = SemgrepUtils.createTemporaryFile(codeFile);
 
         assertTrue(tempFile.exists());
@@ -70,6 +71,7 @@ public class SemgrepUtilsTest {
             utilsMock.when( ()-> SemgrepUtils.cleanupTempDir(anyString())).thenAnswer(invocation ->null);
 
             SemgrepToolResult result = staticAnalysisService.semgrepScan(input);
+            log.info(result.toString());
             utilsMock.verify(() -> SemgrepUtils.cleanupTempDir(fakeFile.getAbsolutePath()), times(1));
         }
 
@@ -77,11 +79,12 @@ public class SemgrepUtilsTest {
     }
 
     @Test
-    void testCleanupTempDirCalledOnException() throws Exception {
+    void testCleanupTempDirCalledOnException() {
         try (MockedStatic<SemgrepUtils> utilsMock = mockStatic(SemgrepUtils.class)) {
 
             utilsMock.when( ()->SemgrepUtils.createTemporaryFile(any(CodeFile.class))).thenThrow(new RuntimeException("File creation failed"));
             SemgrepToolResult result = staticAnalysisService.semgrepScan(input);
+            log.info(result.toString());
             utilsMock.verify(() -> SemgrepUtils.cleanupTempDir(null), times(1));
         }
         log.info("cleanupTempDir invocation during an exception in semgrepScan has been successfully verified in unit tests");
@@ -90,8 +93,8 @@ public class SemgrepUtilsTest {
     @Test
     public void testRunSemgrepServiceParsesJsonOutput(@TempDir Path tempDir) throws IOException {
         File tempFile = new File(tempDir.toFile(), "Test.java");
-        String code = "public class Test { public static void main(String[] args) { System.out.println(\"Hello\"); } }";
-        Files.writeString(tempFile.toPath(), code);
+    String code = "public class Test { public static void main(String[] args) { System.out.println(\"Hello\"); } }";
+        Files.writeString(tempFile.toPath(),code);
 
         ArrayList<String> commands = new ArrayList<>(Arrays.asList("semgrep",
                 "--config", "auto",
@@ -100,7 +103,7 @@ public class SemgrepUtilsTest {
                 "--no-git-ignore"));
         commands.add(tempFile.getAbsolutePath());
 
-        JsonNode result = semgrepUtils.runSemgrepService(commands, tempFile.getAbsolutePath());
+        JsonNode result = SemgrepUtils.runSemgrepService(commands, tempFile.getAbsolutePath());
         assertNotNull(result);
         System.out.println(result.toPrettyString());
         assertTrue(result.has("results"));
@@ -110,8 +113,84 @@ public class SemgrepUtilsTest {
         assertTrue(result.has("interfile_languages_used"));
         assertTrue(result.has("skipped_rules"));
         String path = result.get("paths").get("scanned").toString();
-        String trimmedPath = path.replaceAll("[\\[\\]\"]", "").replaceAll("\\\\\\\\", "\\\\");;
+        String trimmedPath = path.replaceAll("[\\[\\]\"]", "").replaceAll("\\\\\\\\", "\\\\");
         assertEquals(tempFile.getAbsoluteFile().toString(), trimmedPath);
     }
+
+    @Test
+    public void testValidateAbsolutePath_withAbsolutePath( @TempDir Path tempDir) throws Exception {
+        Path absPath = tempDir.resolve("file.txt");
+        Files.createFile(absPath);
+        String result = SemgrepUtils.validateAbsolutePath(absPath.toString(), PARAM_NAME);
+        assertEquals(absPath.toRealPath().toString(), result);
+    }
+
+
+    @Test
+    public void testValidateAbsolutePath_withRelativePath_throws() {
+        String relativePath = "relative/path/to/file.txt";
+
+        McpError ex = assertThrows(McpError.class, () -> SemgrepUtils.validateAbsolutePath(relativePath, PARAM_NAME));
+        assertTrue(ex.getMessage().contains("must be an absolute path"));
+    }
+
+    @Test
+    public void testValidateAbsolutePath_withPathTraversal_throws(@TempDir Path tempDir) throws IOException {
+        Path dir = tempDir.resolve("dir");
+        Files.createDirectory(dir);
+        Path file = dir.resolve("file.txt");
+        Files.createFile(file);
+
+        // Construct a path with traversal that goes outside tempDir
+        Path outsidePath = tempDir.resolve("dir").resolve("..").resolve("..").resolve("file.txt").toAbsolutePath();
+
+        // This path is absolute but contains traversal sequences
+        McpError ex = assertThrows(McpError.class, () -> SemgrepUtils.validateAbsolutePath(outsidePath.toString(), PARAM_NAME));
+        log.info("Exception message: {}", ex.getMessage());
+        assertTrue(ex.getCode().contains("INVALID_PARAMS"));
+    }
+
+
+    @Test
+    public void testValidateAbsolutePath_withNonExistentPath_throws(@TempDir Path tempDir) {
+        Path nonExistent = tempDir.resolve("nonexistentfile.txt");
+
+        McpError ex = assertThrows(McpError.class, () -> SemgrepUtils.validateAbsolutePath(nonExistent.toString(), PARAM_NAME));
+        assertTrue(ex.getMessage().contains("Invalid path"));
+    }
+
+    @Test
+    public void testValidateConfig_withSpecialPrefixes_returnsInput() throws McpError {
+        String config = "auto";
+        String result = SemgrepUtils.validateConfig(config);
+        assertEquals(config, result);
+
+
+        // Also test "p/something" and "r/something"
+        assertEquals("p/something", SemgrepUtils.validateConfig("p/something"));
+        assertEquals("r/something", SemgrepUtils.validateConfig("r/something"));
+        assertEquals("auto", SemgrepUtils.validateConfig(null));
+    }
+
+    @Test
+    public void testValidateConfig_withAbsolutePath_callsValidateAbsolutePath(@TempDir Path tempDir) throws Exception {
+        Path absPath = tempDir.resolve("file.txt");
+        Files.createFile(absPath);
+
+        String result = SemgrepUtils.validateConfig(absPath.toString());
+        assertEquals(absPath.toRealPath().toString(), result);
+    }
+
+    @Test
+    public void testValidateConfig_withRelativePath_throws() {
+        String relativePath = "relative/path";
+
+        McpError ex = assertThrows(McpError.class, () -> SemgrepUtils.validateConfig(relativePath));
+        assertTrue(ex.getMessage().contains("must be an absolute path"));
+    }
+
+
+
+
 
 }

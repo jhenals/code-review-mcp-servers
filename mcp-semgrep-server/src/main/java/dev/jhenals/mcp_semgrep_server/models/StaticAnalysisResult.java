@@ -10,20 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Represents Semgrep scan results
- */
-
 @Getter
 @Setter
 @AllArgsConstructor
-public class SemgrepScanResult {
+public class StaticAnalysisResult {
     private List<SemgrepFinding> findings;
     private List<String> errors;
     private Map<String, Object> paths;
     private String version;
 
-    public SemgrepScanResult() {
+    public StaticAnalysisResult() {
         this.findings = new ArrayList<>();
         this.errors = new ArrayList<>();
         this.paths = new HashMap<>();
@@ -36,7 +32,7 @@ public class SemgrepScanResult {
 
     @Override
     public String toString() {
-        return "SemgrepScanResult{" +
+        return "StaticAnalysisResult{" +
                 "findings=" + findings +
                 ", errors=" + errors +
                 ", paths=" + paths +

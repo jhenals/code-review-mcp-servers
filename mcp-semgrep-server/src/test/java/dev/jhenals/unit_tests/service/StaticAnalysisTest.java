@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.SemgrepServerApplication;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
 import dev.jhenals.mcp_semgrep_server.models.SemgrepToolResult;
+import dev.jhenals.mcp_semgrep_server.models.StaticAnalysisResult;
 import dev.jhenals.mcp_semgrep_server.models.semgrep_parser.SemgrepFinding;
-import dev.jhenals.mcp_semgrep_server.models.SemgrepScanResult;
 import dev.jhenals.mcp_semgrep_server.models.semgrep_parser.SemgrepResultParser;
 import dev.jhenals.mcp_semgrep_server.service.StaticAnalysisService;
 import dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils;
@@ -39,9 +39,9 @@ public class StaticAnalysisTest {
     }
 
     @Test
-    void testSemgrepScanSuccess() throws Exception {
+    void testSemgrepScanSuccess() {
         Map<String, Object> input = new HashMap<>();
-        // Provide minimal Java code that violates common patterns
+
         Map<String, String> codeFile = new HashMap<>();
         codeFile.put("filename", "Example.java");
         codeFile.put("content", "public class Example { public void doSomething() { System.out.println(\"Hello\"); } }"); //Input with no finding
@@ -55,8 +55,8 @@ public class StaticAnalysisTest {
         assertNotNull(result, "SemgrepToolResult should not be null");
         assertTrue(result.success(), "Scan should succeed");
 
-        SemgrepScanResult results = result.output();
-        assertNotNull(results, "SemgrepScanResult should not be null");
+        StaticAnalysisResult results = result.output();
+        assertNotNull(results, "StaticAnalysisResult should not be null");
 
         System.out.println("Findings Count: " + results.getFindingCount());
         for (SemgrepFinding finding : results.getFindings()) {
@@ -68,7 +68,7 @@ public class StaticAnalysisTest {
     }
 
     @Test
-    void testSemgrepScanSuccessWithFindings() throws Exception {
+    void testSemgrepScanSuccessWithFindings() {
         Map<String, Object> input= getStringObjectMap();
 
         SemgrepToolResult result = staticAnalysisService.semgrepScan(input);
@@ -77,8 +77,8 @@ public class StaticAnalysisTest {
         assertNotNull(result, "SemgrepToolResult should not be null");
         assertTrue(result.success(), "Scan should succeed");
 
-        SemgrepScanResult results = result.output();
-        assertNotNull(results, "SemgrepScanResult should not be null");
+        StaticAnalysisResult results = result.output();
+        assertNotNull(results, "StaticAnalysisResult should not be null");
 
         System.out.println("Findings Count: " + results.getFindingCount());
         for (SemgrepFinding finding : results.getFindings()) {
@@ -92,23 +92,25 @@ public class StaticAnalysisTest {
         Map<String, Object> input = new HashMap<>();
         Map<String, String> codeFile = Map.of(
                 "filename", "Test.java",
-                "content", "public class SemgrepAutoConfigTest {\n" +
-                        "\n" +
-                        "    public static void main(String[] args) {\n" +
-                        "        // Example of hardcoded password - semgrep auto config may detect this\n" +
-                        "        String password = \"password123\";\n" +
-                        "\n" +
-                        "        // Example of dangerous command execution\n" +
-                        "        try {\n" +
-                        "            Runtime.getRuntime().exec(\"rm -rf /tmp/test\");\n" +
-                        "        } catch (Exception e) {\n" +
-                        "            e.printStackTrace();\n" +
-                        "        }\n" +
-                        "\n" +
-                        "        // Example of printing to console\n" +
-                        "        System.out.println(\"Test complete\");\n" +
-                        "    }\n" +
-                        "}\n"); //Input with multiple findings
+                "content", """
+                        public class SemgrepAutoConfigTest {
+                        
+                            public static void main(String[] args) {
+                                // Example of hardcoded password - semgrep auto config may detect this
+                                String password = "password123";
+                        
+                                // Example of dangerous command execution
+                                try {
+                                    Runtime.getRuntime().exec("rm -rf /tmp/test");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                        
+                                // Example of printing to console
+                                System.out.println("Test complete");
+                            }
+                        }
+                        """); //Input with multiple findings
 
         input.put("code_file", codeFile);
         input.put("config", "auto");
@@ -116,7 +118,7 @@ public class StaticAnalysisTest {
     }
 
     @Test
-    void testSemgrepScanWithException() throws Exception {
+    void testSemgrepScanWithException() {
         Map<String, String> codeFile = new HashMap<>();
         codeFile.put("filename", "Test.java");
         codeFile.put("content", "public class Test { }");
@@ -156,8 +158,8 @@ public class StaticAnalysisTest {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode dummyJsonNode = objectMapper.readTree(dummyJson);
 
-        //dummy SemgrepScanResult
-        SemgrepScanResult dummyScanResult = mock(SemgrepScanResult.class);
+        //dummy StaticAnalysisResult
+        StaticAnalysisResult dummyScanResult = mock(StaticAnalysisResult.class);
 
         //Mock static methods
         try (MockedStatic<SemgrepUtils> utilsMockedStatic = mockStatic(SemgrepUtils.class);
@@ -194,7 +196,7 @@ public class StaticAnalysisTest {
     }
 
     @Test
-    void testSemgrepScanWithCustomRuleSuccessWithFinding() throws Exception {
+    void testSemgrepScanWithCustomRuleSuccessWithFinding() {
         Map<String, Object> input = getInputForScanWithCustomRule();
 
         SemgrepToolResult result = staticAnalysisService.semgrepScanWithCustomRule(input);
@@ -213,45 +215,48 @@ public class StaticAnalysisTest {
 
         Map<String, String> codeFileMap = Map.of(
                 "filename", "VulnerableExample.java",
-                "content", "public class VulnerableExample {\n" +
-                        "    public void insecureMethod() {\n" +
-                        "        String password = \"123456\";\n" +
-                        "        try {\n" +
-                        "            Runtime.getRuntime().exec(\"rm -rf /\");\n" +
-                        "        } catch (Exception e) {\n" +
-                        "            e.printStackTrace();\n" +
-                        "        }\n" +
-                        "    }\n" +
-                        "}"
+                "content", """
+                        public class VulnerableExample {
+                            public void insecureMethod() {
+                                String password = "123456";
+                                try {
+                                    Runtime.getRuntime().exec("rm -rf /");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }"""
         );
 
         input.put("code_file", codeFileMap);
         input.put("config", "auto");  // or any config you want to test with
         input.put("rule",
-                "rules:\n" +
-                        "  - id: hardcoded-password\n" +
-                        "    patterns:\n" +
-                        "      - pattern: String $PASSWORD = \"$SECRET\"\n" +
-                        "    message: \"Hardcoded password detected\"\n" +
-                        "    severity: ERROR\n" +
-                        "    languages: [java]\n" +
-                        "    metadata:\n" +
-                        "      category: security\n" +
-                        "\n" +
-                        "  - id: dangerous-exec\n" +
-                        "    patterns:\n" +
-                        "      - pattern: Runtime.getRuntime().exec($CMD)\n" +
-                        "    message: \"Dangerous command execution detected\"\n" +
-                        "    severity: ERROR\n" +
-                        "    languages: [java]\n" +
-                        "    metadata:\n" +
-                        "      category: security\n"
+                """
+                        rules:
+                          - id: hardcoded-password
+                            patterns:
+                              - pattern: String $PASSWORD = "$SECRET"
+                            message: "Hardcoded password detected"
+                            severity: ERROR
+                            languages: [java]
+                            metadata:
+                              category: security
+                        
+                          - id: dangerous-exec
+                            patterns:
+                              - pattern: Runtime.getRuntime().exec($CMD)
+                            message: "Dangerous command execution detected"
+                            severity: ERROR
+                            languages: [java]
+                            metadata:
+                              category: security
+                        """
         );
         return input;
     }
 
     @Test
-    void testSemgrepScanWithCustomRuleException() throws IOException{
+    void testSemgrepScanWithCustomRuleException(){
         Map<String, Object> input = new HashMap<>();
         Map<String, String> codeFileMap = Map.of("filename", "Test.java", "content", "public class Test {}");
         input.put("code_file", codeFileMap);

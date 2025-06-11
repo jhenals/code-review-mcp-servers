@@ -1,7 +1,7 @@
 package dev.jhenals.mcp_semgrep_server.models.semgrep_parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.jhenals.mcp_semgrep_server.models.SemgrepScanResult;
+import dev.jhenals.mcp_semgrep_server.models.StaticAnalysisResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +13,8 @@ public class SemgrepResultParser {
     /**
      * Parse Semgrep JSON output into structured results
      */
-    public static SemgrepScanResult parseSemgrepOutput(JsonNode jsonOutput) {
-        SemgrepScanResult results = new SemgrepScanResult();
+    public static StaticAnalysisResult parseSemgrepOutput(JsonNode jsonOutput) {
+        StaticAnalysisResult results = new StaticAnalysisResult();
 
         if (jsonOutput == null) {
             return results;
@@ -73,13 +73,13 @@ public class SemgrepResultParser {
         JsonNode endNode = findingNode.path("end");
 
         if (!startNode.isMissingNode()) {
-            finding.setStartLine(getIntValue(startNode, "line", 0));
-            finding.setStartCol(getIntValue(startNode, "col", 0));
+            finding.setStartLine(getIntValue(startNode, "line"));
+            finding.setStartCol(getIntValue(startNode, "col"));
         }
 
         if (!endNode.isMissingNode()) {
-            finding.setEndLine(getIntValue(endNode, "line", 0));
-            finding.setEndCol(getIntValue(endNode, "col", 0));
+            finding.setEndLine(getIntValue(endNode, "line"));
+            finding.setEndCol(getIntValue(endNode, "col"));
         }
 
         // Extract matched text if available
@@ -105,9 +105,9 @@ public class SemgrepResultParser {
     /**
      * Helper method to get integer value from JSON node
      */
-    private static int getIntValue(JsonNode node, String fieldName, int defaultValue) {
+    private static int getIntValue(JsonNode node, String fieldName) {
         JsonNode fieldNode = node.get(fieldName);
-        return (fieldNode != null && fieldNode.isInt()) ? fieldNode.asInt() : defaultValue;
+        return (fieldNode != null && fieldNode.isInt()) ? fieldNode.asInt() : 0;
     }
 
     /**
@@ -190,7 +190,7 @@ public class SemgrepResultParser {
     /**
      * Get summary statistics
      */
-    public static String getSummary(SemgrepScanResult results) {
+    public static String getSummary(StaticAnalysisResult results) {
         Map<String, Long> severityCounts = results.getFindings().stream()
                 .collect(Collectors.groupingBy(
                         finding -> finding.getSeverity() != null ? finding.getSeverity() : "unknown",

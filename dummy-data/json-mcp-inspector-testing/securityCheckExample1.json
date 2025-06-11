@@ -1,0 +1,6 @@
+{
+  "code_file": {
+    "filename": "Clean.java",
+    "content": "public class Clean { public void safe() {} }"
+  }
+}
