@@ -1,0 +1,7 @@
+{
+  "code_file": {
+    "filename": "Test.java",
+    "content": "public class SemgrepAutoConfigTest {\n\n    public static void main(String[] args) {\n        // Example of hardcoded password - semgrep auto config may detect this\n        String password = \"password123\";\n\n        // Example of dangerous command execution\n        try {\n            Runtime.getRuntime().exec(\"rm -rf /tmp/test\");\n        } catch (Exception e) {\n            e.printStackTrace();\n        }\n\n        // Example of printing to console\n        System.out.println(\"Test complete\");\n    }\n}"
+  },
+  "config": "auto"
+}
