@@ -8,11 +8,11 @@ import java.util.Map;
 
 @Getter
 @NoArgsConstructor
-public class SemgrepSecurityCheckResult {
+public class SecurityCheckResult {
 
-    private Map<String, String> securityCheckResult = new HashMap<>();
+    private final Map<String, String> securityCheckResult = new HashMap<>();
 
-    public SemgrepSecurityCheckResult(String message){
+    public SecurityCheckResult(String message){
         this.securityCheckResult.put("message", message);
     }
 }

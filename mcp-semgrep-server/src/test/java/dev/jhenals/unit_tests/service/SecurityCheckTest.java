@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.SemgrepServerApplication;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
-import dev.jhenals.mcp_semgrep_server.models.SemgrepSecurityCheckResult;
+import dev.jhenals.mcp_semgrep_server.models.SecurityCheckResult;
 import dev.jhenals.mcp_semgrep_server.models.SemgrepToolResult;
 import dev.jhenals.mcp_semgrep_server.service.SecurityCheckService;
 import dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils;
@@ -60,7 +60,7 @@ public class SecurityCheckTest {
             assertNotNull(result);
             assertTrue(result.success());
 
-            SemgrepSecurityCheckResult checkResult = result.securityCheckResult();
+            SecurityCheckResult checkResult = result.securityCheckResult();
             assertNotNull(checkResult);
             String message = checkResult.getSecurityCheckResult().get("message");
             assertNotNull(message);
@@ -81,7 +81,6 @@ public class SecurityCheckTest {
                 "content", "public class Clean { public void safe() {} }"
         );
         input.put("code_file", codeFileMap);
-        input.put("code_files", Arrays.asList(codeFileMap));
 
         // Fake temp file
         File fakeFile = new File("/tmp/fakeCleanFile.java");
@@ -101,7 +100,7 @@ public class SecurityCheckTest {
             assertNotNull(result);
             assertTrue(result.success());
 
-            SemgrepSecurityCheckResult checkResult = result.securityCheckResult();
+            SecurityCheckResult checkResult = result.securityCheckResult();
             assertNotNull(checkResult);
             String message = checkResult.getSecurityCheckResult().get("message");
             assertEquals("No security issues found in the code!", message);
@@ -113,14 +112,13 @@ public class SecurityCheckTest {
     }
 
     @Test
-    void testSecurityCheckException() throws Exception {
+    void testSecurityCheckException()  {
         Map<String, Object> input = new HashMap<>();
         Map<String, String> codeFileMap = Map.of(
                 "filename", "Error.java",
                 "content", "public class Error {}"
         );
         input.put("code_file", codeFileMap);
-        input.put("code_files", Arrays.asList(codeFileMap));
 
         try (MockedStatic<SemgrepUtils> utilsMock = mockStatic(SemgrepUtils.class)) {
             utilsMock.when(() -> SemgrepUtils.createTemporaryFile(any(CodeFile.class)))

@@ -4,6 +4,7 @@ package dev.jhenals.mcp_semgrep_server.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.json.JsonParseException;
 
 import java.io.*;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class SemgrepUtils {
 
     public static File createTemporaryFile(CodeFile codefile) throws IOException {
@@ -64,6 +66,7 @@ public class SemgrepUtils {
         Path path = Paths.get(pathToValidate);
 
         if (!path.isAbsolute()) {
+            log.info("Must be an absolute path. Received {}", pathToValidate);
             throw new McpError("INVALID_PARAMS",
                     paramName + " must be an absolute path. Received: " + pathToValidate);
         }
@@ -74,6 +77,7 @@ public class SemgrepUtils {
                 throw new McpError("INVALID_PARAMS",
                         paramName + " contains invalid path traversal sequences.");
             }
+            log.info("Normalized path: {}", normalized);
             return normalized.toString();
         } catch (IOException e) {
             throw new McpError("INVALID_PARAMS",
@@ -82,7 +86,10 @@ public class SemgrepUtils {
     }
 
     public static String validateConfig(String config) throws McpError {
-        if (config == null || config.startsWith("p/") ||
+        if(config == null){
+            return "auto";
+        }
+        else if (config.startsWith("p/") ||
                 config.startsWith("r/") || config.equals("auto")) {
             return config;
         }
@@ -95,7 +102,7 @@ public class SemgrepUtils {
 
 //
 //
-//    public static void removeTempDirFromResults(SemgrepScanResult results, String tempDir) {
+//    public static void removeTempDirFromResults(StaticAnalysisResult results, String tempDir) {
 //        Path tempPath = Paths.get(tempDir);
 //
 //        // Process findings results
