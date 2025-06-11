@@ -1,0 +1,7 @@
+{
+  "code_file": {
+    "filename": "Example.java",
+    "content": "public class Example { public void doSomething() { System.out.println(\"Hello\"); } }"
+  },
+  "config": "auto"
+}

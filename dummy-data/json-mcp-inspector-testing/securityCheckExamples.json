@@ -1,0 +1,51 @@
+[
+  {
+    "code_file": {
+      "filename": "Example1.java",
+      "content": "public class Example1 {\n    public void login() {\n        String password = \"supersecret123\";\n    }\n  }"
+    },
+    "config": "auto"
+  },
+  {
+    "code_file": {
+      "filename": "Example2.java",
+      "content": "public class Example2 {\n    public void deleteFiles(String dir) throws Exception {\n        Runtime.getRuntime().exec(\"rm -rf \" + dir);\n    }\n  }"
+    },
+    "config": "auto"
+  },
+  {
+    "code_file": {
+      "filename": "Example3.java",
+      "content": "public class Example3 {\n    public void getUser(String username) throws SQLException {\n        Statement stmt = connection.createStatement();\n        String query = \"SELECT * FROM users WHERE username = '\" + username + \"'\";\n        stmt.executeQuery(query);\n    }\n  }"
+    },
+    "config": "auto"
+  },
+  {
+    "code_file": {
+      "filename": "Example4.java",
+      "content": "import java.util.Random;\n\npublic class Example4 {\n    public void generateToken() {\n        Random rand = new Random();\n        int token = rand.nextInt();\n    }\n  }"
+    },
+    "config": "auto"
+  },
+  {
+    "code_file": {
+      "filename": "Example5.java",
+      "content": "import javax.net.ssl.*;\n\npublic class Example5 {\n    public void trustAllSSL() throws Exception {\n        TrustManager[] trustAllCerts = new TrustManager[] {\n            new X509TrustManager() {\n                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}\n                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}\n                public java.security.cert.X509Certificate[] getAcceptedIssuers() { return null; }\n            }\n        };\n\n        SSLContext sc = SSLContext.getInstance(\"SSL\");\n        sc.init(null, trustAllCerts, new java.security.SecureRandom());\n        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());\n    }\n  }"
+    },
+    "config": "auto"
+  },
+  {
+    "code_file": {
+      "filename": "Example6.java",
+      "content": "public class Example6 {\n    public void logCredentials(String username, String password) {\n        System.out.println(\"Username: \" + username + \", Password: \" + password);\n    }\n  }"
+    },
+    "config": "auto"
+  },
+  {
+    "code_file": {
+      "filename": "Example7.java",
+      "content": "import java.io.*;\n\npublic class Example7 {\n    public void createFile() throws IOException {\n        File file = new File(\"/tmp/secret.txt\");\n        file.createNewFile();\n    }\n  }"
+    },
+    "config": "auto"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "code_file": {
+    "filename": "Test.java",
+    "content": "public class Test {\n    public static void main(String[] args) {\n        int a = 42;\n        System.out.println(\"Hello world\");\n    }\n}"
+  },
+  "config": "auto",
+  "rule": "rules:\n  - id: test-rule\n    pattern: $X"
+}
