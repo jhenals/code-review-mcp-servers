@@ -1,0 +1,10 @@
+rules:
+  - id: avoid-system-out
+    patterns:
+      - pattern: System.out.println($MSG)
+    message: "Avoid using System.out.println; use a logger instead"
+    severity: WARNING
+    languages: [java]
+    metadata:
+      category: best-practices
+      technology: java

@@ -1,0 +1,18 @@
+  rules:
+    - id: hardcoded-password
+      patterns:
+         - pattern: String $PASSWORD = \"$SECRET\
+      message: "Hardcoded password detected"
+      severity: ERROR
+      languages: [java]
+      metadata:
+        category: security
+
+    - id: dangerous-exec
+      patterns:
+        - pattern: Runtime.getRuntime().exec($CMD)
+      message: "Dangerous command execution detected"
+      severity: ERROR
+      languages: [java]
+      metadata:
+          category: security
