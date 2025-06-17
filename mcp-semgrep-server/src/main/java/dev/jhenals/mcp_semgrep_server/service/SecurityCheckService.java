@@ -20,9 +20,7 @@ import static dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils.*;
 @Service
 public class SecurityCheckService {
 
-    private final ObjectMapper objectMapper= new ObjectMapper();
-
-    public StaticAnalysisResult securityCheck(Map<String, Object> input) throws McpError {
+    public StaticAnalysisResult securityCheck(Map<String, Object> input) throws McpError, IOException {
         String temporaryFileAbsolutePath= null;
 
         try {
@@ -43,10 +41,10 @@ public class SecurityCheckService {
             JsonNode output= runSemgrepService(commands, temporaryFileAbsolutePath);
             log.info("Json output: {}", output.toPrettyString());
             return SemgrepResultParser.parseSemgrepOutput(output);
-        } catch (IOException e) {
-            throw new McpError("INTERNAL_ERROR", e.getMessage());
         } catch (McpError e) {
-            throw new RuntimeException(e);
+            throw new McpError("INTERNAL_ERROR", e.getMessage());
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
         } finally {
             cleanupTempDir(temporaryFileAbsolutePath);
         }
