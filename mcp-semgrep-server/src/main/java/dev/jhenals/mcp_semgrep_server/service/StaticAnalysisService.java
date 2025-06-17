@@ -1,12 +1,15 @@
 package dev.jhenals.mcp_semgrep_server.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.models.*;
 import dev.jhenals.mcp_semgrep_server.models.semgrep_parser.SemgrepResultParser;
 import dev.jhenals.mcp_semgrep_server.models.StaticAnalysisResult;
+import dev.jhenals.mcp_semgrep_server.utils.McpError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 import static dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils.*;
@@ -14,13 +17,16 @@ import static dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils.*;
 @Slf4j
 @Service
 public class StaticAnalysisService {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public SemgrepToolResult semgrepScan(Map<String, Object> input){
+
+    public StaticAnalysisResult semgrepScan(Map<String, Object> input) throws McpError {
         String temporaryFileAbsolutePath= null;
 
         try{
             String config= validateConfig((String) input.get("config"));
 
+            @SuppressWarnings("unchecked")
             Map<String, String> codeFileMap = (Map<String, String>) input.get("code_file");
             CodeFile codeFile = new CodeFile(codeFileMap.get("filename"), codeFileMap.get("content"));
 
@@ -32,18 +38,20 @@ public class StaticAnalysisService {
                     "--quiet",
                     "--no-git-ignore"));
             JsonNode output= runSemgrepService(commands, temporaryFileAbsolutePath);
-            StaticAnalysisResult results= SemgrepResultParser.parseSemgrepOutput(output);
-            log.info(SemgrepResultParser.getSummary(results));
+            StaticAnalysisResult staticAnalysisResult= SemgrepResultParser.parseSemgrepOutput(output);
+            log.info(SemgrepResultParser.getSummary(staticAnalysisResult));
 
-            return SemgrepToolResult.scanSuccess(results);
-        } catch (Exception e){
-            return SemgrepToolResult.error("INTERNAL_ERROR", e.getMessage());
-        }finally {
+            return staticAnalysisResult;
+        } catch (McpError e){
+            throw new McpError("INTERNAL_ERROR", e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
             cleanupTempDir(temporaryFileAbsolutePath);
         }
     }
 
-    public SemgrepToolResult semgrepScanWithCustomRule(Map<String,Object> input) {
+    public StaticAnalysisResult semgrepScanWithCustomRule(Map<String,Object> input) throws McpError {
         String temporaryFileAbsolutePath = null;
         String rulePath = null;
 
@@ -64,13 +72,14 @@ public class StaticAnalysisService {
                     "--no-git-ignore"));
             commands.add(temporaryFileAbsolutePath);
 
+
             JsonNode output = runSemgrepService(commands, temporaryFileAbsolutePath);
             log.info("Json output: {}", output.toPrettyString());
 
-            StaticAnalysisResult results = SemgrepResultParser.parseSemgrepOutput(output);
-            return SemgrepToolResult.scanSuccess(results);
+            return SemgrepResultParser.parseSemgrepOutput(output);
+
         } catch (Exception e) {
-            return SemgrepToolResult.error("INTERNAL_ERROR", e.getMessage());
+            throw new McpError("INTERNAL_ERROR", e.getMessage());
         } finally {
             cleanupTempDir(temporaryFileAbsolutePath);
             cleanupTempDir(rulePath);

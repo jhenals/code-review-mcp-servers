@@ -1,27 +1,32 @@
 package dev.jhenals.mcp_semgrep_server.models;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record SemgrepToolResult(boolean success, StaticAnalysisResult output,
-                                SecurityCheckResult securityCheckResult, String errorCode, String errorMessage) {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record SemgrepToolResult(
+        @JsonProperty("success") boolean success,
+        @JsonProperty("output") StaticAnalysisResult output,
+        @JsonProperty("errorCode") String errorCode,
+        @JsonProperty("errorMessage") String errorMessage
+) {
+    @JsonCreator
+    public SemgrepToolResult {
+    }
 
+    // Static factory method for a successful Semgrep scan result
     public static SemgrepToolResult scanSuccess(StaticAnalysisResult output) {
-        return new SemgrepToolResult(true, output, null, null, null);
+        return new SemgrepToolResult(true, output, null, null);
     }
 
-    public static SemgrepToolResult securityCheckSuccess(SecurityCheckResult securityCheckResult) {
-        return new SemgrepToolResult(true, null, securityCheckResult, null, null);
+    // Static factory method for a successful security check result
+    public static SemgrepToolResult securityCheckSuccess(StaticAnalysisResult securityCheckResult) {
+        return new SemgrepToolResult(true, securityCheckResult, null, null);
     }
 
+    // Static factory method for an error result
     public static SemgrepToolResult error(String code, String errorMessage) {
-        return new SemgrepToolResult(false, null, null, code, errorMessage);
-    }
-
-    public String toString() {
-        return "Semgrep Result: [" +
-                "Success= " + success + "\n" +
-                "Security Check Result= " + securityCheckResult + "\n" +
-                "Semgrep Scan Result= " + output + "\n" +
-                "Error Code= " + errorCode + "\n" +
-                "Error Message= " + errorMessage + "]";
+        return new SemgrepToolResult(false, null, code, errorMessage);
     }
 
 }
