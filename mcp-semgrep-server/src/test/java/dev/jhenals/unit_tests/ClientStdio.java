@@ -25,7 +25,7 @@ import java.util.Map;
 public class ClientStdio {
     private static final Logger log = LoggerFactory.getLogger(ClientStdio.class);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         ServerParameters  stdioParams = ServerParameters.builder("java")
 			.args("-Dspring.ai.mcp.server.transport=STDIO",
                     "-jar",

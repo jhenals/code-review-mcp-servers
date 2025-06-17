@@ -1,5 +1,7 @@
 package dev.jhenals.mcp_semgrep_server.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.jhenals.mcp_semgrep_server.models.semgrep_parser.SemgrepFinding;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,10 +15,15 @@ import java.util.Map;
 @Getter
 @Setter
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class StaticAnalysisResult {
+    @JsonProperty("findings")
     private List<SemgrepFinding> findings;
+    @JsonProperty("errors")
     private List<String> errors;
+    @JsonProperty("paths")
     private Map<String, Object> paths;
+    @JsonProperty("version")
     private String version;
 
     public StaticAnalysisResult() {
@@ -30,14 +37,5 @@ public class StaticAnalysisResult {
     public int getFindingCount() { return findings.size(); }
     public int getErrorCount() { return errors.size(); }
 
-    @Override
-    public String toString() {
-        return "StaticAnalysisResult{" +
-                "findings=" + findings +
-                ", errors=" + errors +
-                ", paths=" + paths +
-                ", version='" + version + '\'' +
-                '}';
-    }
 }
 
