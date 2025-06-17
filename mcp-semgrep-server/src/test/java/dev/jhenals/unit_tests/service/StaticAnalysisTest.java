@@ -139,7 +139,6 @@ public class StaticAnalysisTest {
         }
     }
 
-
     @Test
     void testSemgrepScanWithCustomRuleSuccess() throws Exception {
         //input

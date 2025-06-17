@@ -17,25 +17,48 @@ import java.util.Map;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StaticAnalysisResult {
-    @JsonProperty("findings")
-    private List<SemgrepFinding> findings;
+    @JsonProperty("version")
+    private String version;
+    @JsonProperty("results")
+    private List<SemgrepFinding> results;
     @JsonProperty("errors")
     private List<String> errors;
     @JsonProperty("paths")
     private Map<String, Object> paths;
-    @JsonProperty("version")
-    private String version;
+
 
     public StaticAnalysisResult() {
-        this.findings = new ArrayList<>();
+        this.results = new ArrayList<>();
         this.errors = new ArrayList<>();
         this.paths = new HashMap<>();
     }
-    public boolean hasFindings() { return !findings.isEmpty(); }
+    public boolean hasFindings() { return !results.isEmpty(); }
     public boolean hasErrors() { return !errors.isEmpty(); }
 
-    public int getFindingCount() { return findings.size(); }
+    public int getFindingCount() { return results.size(); }
     public int getErrorCount() { return errors.size(); }
 
+    public String toString(){
+        StringBuilder sb= new StringBuilder();
+        sb.append("Version: ").append(version).append("\n");
+        sb.append("RESULTS: \n");
+        if(!results.isEmpty()){
+            for(SemgrepFinding finding: results){
+                sb.append("- ").append(finding.toString()).append("\n");
+            }
+        }else{
+            sb.append("- null \n");
+        }
+        sb.append("ERRORS: \n");
+        if(!errors.isEmpty()){
+            for(String error: errors){
+                sb.append("- ").append(error).append("\n");
+            }
+        }else{
+            sb.append("- null \n");
+        }
+        sb.append("PATH: ").append(paths);
+        return sb.toString();
+    }
 }
 

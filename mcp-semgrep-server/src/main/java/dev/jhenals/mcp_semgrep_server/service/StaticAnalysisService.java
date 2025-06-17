@@ -20,7 +20,7 @@ public class StaticAnalysisService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    public StaticAnalysisResult semgrepScan(Map<String, Object> input) throws McpError {
+    public StaticAnalysisResult semgrepScan(Map<String, Object> input) throws McpError, IOException {
         String temporaryFileAbsolutePath= null;
 
         try{
@@ -45,13 +45,13 @@ public class StaticAnalysisService {
         } catch (McpError e){
             throw new McpError("INTERNAL_ERROR", e.getMessage());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
         } finally {
             cleanupTempDir(temporaryFileAbsolutePath);
         }
     }
 
-    public StaticAnalysisResult semgrepScanWithCustomRule(Map<String,Object> input) throws McpError {
+    public StaticAnalysisResult semgrepScanWithCustomRule(Map<String,Object> input) throws McpError, IOException {
         String temporaryFileAbsolutePath = null;
         String rulePath = null;
 
@@ -78,8 +78,10 @@ public class StaticAnalysisService {
 
             return SemgrepResultParser.parseSemgrepOutput(output);
 
-        } catch (Exception e) {
+        } catch (McpError e) {
             throw new McpError("INTERNAL_ERROR", e.getMessage());
+        } catch (IOException e){
+            throw new IOException(e.getMessage());
         } finally {
             cleanupTempDir(temporaryFileAbsolutePath);
             cleanupTempDir(rulePath);
