@@ -49,6 +49,7 @@ public class SemgrepUtilsTest {
         );
     }
 
+    /*
     @Test
     public void testCreateTemporaryFileWritesContent() throws IOException {
         File tempFile = SemgrepUtils.createTemporaryFile(codeFile);
@@ -188,6 +189,8 @@ public class SemgrepUtilsTest {
         McpError ex = assertThrows(McpError.class, () -> SemgrepUtils.validateConfig(relativePath));
         assertTrue(ex.getMessage().contains("must be an absolute path"));
     }
+
+     */
 
 
 

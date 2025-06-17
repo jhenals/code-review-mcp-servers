@@ -8,6 +8,7 @@ import dev.jhenals.mcp_semgrep_server.service.StaticAnalysisService;
 import dev.jhenals.mcp_semgrep_server.utils.McpError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +26,7 @@ public class ToolHandler {
     private SecurityCheckService securityCheckService;
 
     @Tool(name = "semgrep_scan", description = "Performs general code scanning with configurable rulesets")
-    public StaticAnalysisResult semgrepScan(Map<String, Object> input) throws McpError {
+    public StaticAnalysisResult semgrepScan( Map<String, Object> input) throws McpError {
         log.info(">>>semgrepScan input{}", input);
         return this.staticAnalysisService.semgrepScan(input);
     }
