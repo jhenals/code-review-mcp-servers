@@ -6,6 +6,7 @@ import dev.jhenals.mcp_semgrep_server.SemgrepServerApplication;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
 import dev.jhenals.mcp_semgrep_server.models.StaticAnalysisResult;
 import dev.jhenals.mcp_semgrep_server.service.SecurityCheckService;
+import dev.jhenals.mcp_semgrep_server.utils.McpError;
 import dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,15 +60,13 @@ public class SecurityCheckTest {
             StaticAnalysisResult result = securityCheckService.securityCheck(input);
 
             assertNotNull(result);
+            System.out.println(result.toString());
             assertTrue(result.hasFindings());
 
-            log.info("static analysis result: {}", result.getResults());
-            assertNotNull(result);
             assertTrue(result.getResults().stream().anyMatch(f -> f.getCheckId().equals("hardcoded-password")));
-
             utilsMock.verify(() -> SemgrepUtils.cleanupTempDir(fakeFile.getAbsolutePath()), times(1));
         }
-        log.info("securityCheck invocation with findings is successfully validated during unit test");
+        System.out.println("securityCheck invocation with findings is successfully validated during unit test");
     }
 
     @Test
@@ -93,17 +93,13 @@ public class SecurityCheckTest {
             utilsMock.when(() -> SemgrepUtils.cleanupTempDir(anyString())).thenAnswer(invocation -> null);
 
             StaticAnalysisResult result = securityCheckService.securityCheck(input);
-            log.info(String.valueOf(result.getResults().getFirst()));
             assertNotNull(result);
-            //String message =  checkResult.getSecurityCheckResult().get("message");
-            //assertEquals("No security issues found in the code!", message);
-
             utilsMock.verify(() -> SemgrepUtils.cleanupTempDir(fakeFile.getAbsolutePath()), times(1));
         }
 
-        log.info("securityCheck invocation with no findings is successfully validated during unit test");
+        System.out.println("securityCheck invocation with no findings is successfully validated during unit test");
     }
-/*
+
     @Test
     void testSecurityCheckException()  {
         Map<String, Object> input = new HashMap<>();
@@ -115,22 +111,21 @@ public class SecurityCheckTest {
 
         try (MockedStatic<SemgrepUtils> utilsMock = mockStatic(SemgrepUtils.class)) {
             utilsMock.when(() -> SemgrepUtils.createTemporaryFile(any(CodeFile.class)))
-                    .thenThrow(new RuntimeException("Simulated failure"));
+                    .thenThrow(new IOException("Simulated file creation error"));
 
-            SemgrepToolResult result = securityCheckService.securityCheck(input);
+            IOException thrown = assertThrows(IOException.class, ()->{
+                securityCheckService.securityCheck(input);
+            });
 
-            assertNotNull(result);
-            assertFalse(result.success());
-            assertEquals("INTERNAL_ERROR", result.errorCode());
-            assertTrue(result.errorMessage().contains("Simulated failure"));
-
+            // Optional: check exception message
+            assertTrue(thrown.getMessage().contains("Simulated file creation error"));
             utilsMock.verify(() -> SemgrepUtils.cleanupTempDir(null), times(1));
-        }
-        log.info("securityCheck invocation during an exception is successfully validated during unit test");
 
+        }
+        System.out.println("securityCheck invocation during an exception is successfully validated during unit test");
     }
 
- */
+
 
 
 
