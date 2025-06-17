@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class SemgrepUtils {
@@ -30,7 +31,7 @@ public class SemgrepUtils {
     }
 
     public static JsonNode runSemgrepService(ArrayList<String> commands, String absolutePath) throws IOException, McpError {
-       /*
+
         commands.add(absolutePath);
 
         ProcessBuilder pb = new ProcessBuilder(commands);
@@ -48,9 +49,9 @@ public class SemgrepUtils {
                 throw new IOException("Failed to extract JSON from Semgrep output:\n" + output, e);
             }
         }
-    }
 
-         */
+/*
+
         try {
 
             commands.add(absolutePath);
@@ -96,6 +97,8 @@ public class SemgrepUtils {
         } catch (McpError e) {
             throw new RuntimeException(e);
         }
+
+        */
     }
 
     public static void cleanupTempDir(String tempDir) {

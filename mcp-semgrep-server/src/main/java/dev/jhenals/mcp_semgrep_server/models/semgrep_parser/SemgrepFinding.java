@@ -15,14 +15,8 @@ import java.util.Map;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SemgrepFinding {
-    @JsonProperty("ruleId")
-    private String ruleId;
-
-    @JsonProperty("message")
-    private String message;
-
-    @JsonProperty("severity")
-    private String severity;
+    @JsonProperty("checkId")
+    private String checkId;
 
     @JsonProperty("filePath")
     private String filePath;
@@ -39,6 +33,12 @@ public class SemgrepFinding {
     @JsonProperty("endCol")
     private int endCol;
 
+    @JsonProperty("message")
+    private String message;
+
+    @JsonProperty("severity")
+    private String severity;
+
     @JsonProperty("matchedText")
     private String matchedText;
 
@@ -47,7 +47,7 @@ public class SemgrepFinding {
 
     @Override
     public String toString() {
-        return String.format("SemgrepFinding{ruleId='%s', severity='%s', file='%s', line=%d, message='%s'}",
-                ruleId, severity, filePath, startLine, message);
+        return String.format("SemgrepFinding{checkId='%s', severity='%s', file='%s', line=%d, message='%s'}",
+                checkId, severity, filePath, startLine, message);
     }
 }

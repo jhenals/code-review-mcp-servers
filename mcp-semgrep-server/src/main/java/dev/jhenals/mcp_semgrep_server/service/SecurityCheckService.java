@@ -3,7 +3,6 @@ package dev.jhenals.mcp_semgrep_server.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
-import dev.jhenals.mcp_semgrep_server.models.SemgrepToolResult;
 import dev.jhenals.mcp_semgrep_server.models.StaticAnalysisResult;
 import dev.jhenals.mcp_semgrep_server.models.semgrep_parser.SemgrepResultParser;
 import dev.jhenals.mcp_semgrep_server.utils.McpError;
