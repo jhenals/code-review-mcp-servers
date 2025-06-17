@@ -54,11 +54,7 @@ public class StaticAnalysisTest {
         assertNotNull(semgrepScanResult, "SemgrepToolResult should not be null");
 
         System.out.println("Findings Count: " + semgrepScanResult.getFindingCount());
-        //System.out.println(semgrepScanResult.toString());
-
-        for (SemgrepFinding finding : semgrepScanResult.getResults()) {
-            System.out.println(finding.toString());
-        }
+        System.out.println(semgrepScanResult.toString());
 
         // Basic assertion for findings
         assertTrue(semgrepScanResult.getFindingCount() >= 0);
@@ -75,12 +71,8 @@ public class StaticAnalysisTest {
         assertNotNull(semgrepScanResult, "SemgrepToolResult should not be null");
 
         System.out.println("Findings Count: " + semgrepScanResult.getFindingCount());
-        //System.out.println(semgrepScanResult.toString());
+        System.out.println(semgrepScanResult.toString());
 
-        for (SemgrepFinding finding : semgrepScanResult.getResults()) {
-            System.out.println(finding.toString());
-            System.out.println(" - [" + finding.getSeverity() + ","+ "Line "+ finding.getStartLine()+"] " + finding.getMessage());
-        }
         // Basic assertion for findings
         assertTrue(semgrepScanResult.getFindingCount() >= 0);
     }
@@ -136,6 +128,8 @@ public class StaticAnalysisTest {
 
             // Optional: check exception message
             assertTrue(thrown.getMessage().contains("Simulated file creation error"));
+            utilsMock.verify(() -> SemgrepUtils.cleanupTempDir(null), times(1));
+
         }
     }
 
@@ -178,6 +172,7 @@ public class StaticAnalysisTest {
                     .thenReturn(dummyScanResult);
 
             StaticAnalysisResult result = staticAnalysisService.semgrepScanWithCustomRule(input);
+            System.out.println(result.toString());
 
             assertNotNull(result);
             utilsMockedStatic.verify(() -> SemgrepUtils.createTemporaryFile(any(CodeFile.class)), times(2));
@@ -192,8 +187,7 @@ public class StaticAnalysisTest {
         Map<String, Object> input = getInputForScanWithCustomRule();
 
         StaticAnalysisResult result = staticAnalysisService.semgrepScanWithCustomRule(input);
-        log.info(result.toString());
-
+        System.out.println(result.toString());
         assertNotNull(result);
     }
 
