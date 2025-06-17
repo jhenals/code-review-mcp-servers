@@ -1,0 +1,73 @@
+{
+  "version" : "1.123.0",
+  "results" : [ {
+    "check_id" : "java.lang.security.audit.active-debug-code-printstacktrace.active-debug-code-printstacktrace",
+    "path" : "C:\\Users\\subol\\AppData\\Local\\Temp\\semgrepTempDir16835084709825395942\\Test.java",
+    "start" : {
+      "line" : 11,
+      "col" : 13,
+      "offset" : 371
+    },
+    "end" : {
+      "line" : 11,
+      "col" : 32,
+      "offset" : 390
+    },
+    "extra" : {
+      "metavars" : {
+        "$EXCEPTION" : {
+          "start" : {
+            "line" : 11,
+            "col" : 13,
+            "offset" : 371
+          },
+          "end" : {
+            "line" : 11,
+            "col" : 14,
+            "offset" : 372
+          },
+          "abstract_content" : "e"
+        }
+      },
+      "message" : "Possible active debug code detected. Deploying an application with debug code can create unintended entry points or expose sensitive information.",
+      "metadata" : {
+        "likelihood" : "LOW",
+        "impact" : "LOW",
+        "confidence" : "MEDIUM",
+        "category" : "security",
+        "subcategory" : [ "audit" ],
+        "cwe" : [ "CWE-489: Active Debug Code" ],
+        "functional-categories" : [ "debug::search::active-debug-code::java.lang" ],
+        "owasp" : [ "A10:2004 - Insecure Configuration Management", "A06:2017 - Security Misconfiguration", "A05:2021 - Security Misconfiguration" ],
+        "references" : [ "https://cwe.mitre.org/data/definitions/489.html", "https://www.acunetix.com/vulnerabilities/web/stack-trace-disclosure-java/", "https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/08-Testing_for_Error_Handling/02-Testing_for_Stack_Traces", "https://www.securecodewarrior.com/blog/coders-conquer-security-share-learn-series-information-exposure" ],
+        "technology" : [ "java" ],
+        "license" : "Semgrep Rules License v1.0. For more details, visit semgrep.dev/legal/rules-license",
+        "vulnerability_class" : [ "Active Debug Code" ],
+        "source" : "https://semgrep.dev/r/java.lang.security.audit.active-debug-code-printstacktrace.active-debug-code-printstacktrace",
+        "shortlink" : "https://sg.run/4K8z",
+        "semgrep.dev" : {
+          "rule" : {
+            "origin" : "pro_rules",
+            "r_id" : 27144,
+            "rule_id" : "v8U0rZ",
+            "rv_id" : 947426,
+            "url" : "https://semgrep.dev/playground/r/GxTP0lB/java.lang.security.audit.active-debug-code-printstacktrace.active-debug-code-printstacktrace",
+            "version_id" : "GxTP0lB"
+          }
+        }
+      },
+      "severity" : "WARNING",
+      "fingerprint" : "1500b9f1ec00721abfa2b37d13573e89fccacdc3e560634fc84cedecf60dd6b89262b87d90b8d5adf704be16b2e5b0b66df81d36e757e33223cf515d60823b06_0",
+      "lines" : "            e.printStackTrace();",
+      "is_ignored" : false,
+      "validation_state" : "NO_VALIDATOR",
+      "engine_kind" : "OSS"
+    }
+  } ],
+  "errors" : [ ],
+  "paths" : {
+    "scanned" : [ "C:\\Users\\subol\\AppData\\Local\\Temp\\semgrepTempDir16835084709825395942\\Test.java" ]
+  },
+  "interfile_languages_used" : [ ],
+  "skipped_rules" : [ ]
+}
