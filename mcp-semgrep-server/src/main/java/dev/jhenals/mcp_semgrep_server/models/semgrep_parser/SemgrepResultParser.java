@@ -14,7 +14,6 @@ public class SemgrepResultParser {
      * Parse Semgrep JSON output into structured results
      */
     public static StaticAnalysisResult parseSemgrepOutput(JsonNode jsonOutput) {
-       //System.out.println(jsonOutput.toPrettyString());
 
         StaticAnalysisResult results = new StaticAnalysisResult();
 
