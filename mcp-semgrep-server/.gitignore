@@ -19,6 +19,10 @@ target/
 *.iml
 *.ipr
 
+# IntelliJ Database Navigator
+dbnavigator.xml
+.idea/dbnavigator.xml
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

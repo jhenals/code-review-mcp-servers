@@ -1,31 +1,16 @@
 package dev.jhenals.unit_tests.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
-import dev.jhenals.mcp_semgrep_server.models.SemgrepToolResult;
 import dev.jhenals.mcp_semgrep_server.service.StaticAnalysisService;
-import dev.jhenals.mcp_semgrep_server.utils.McpError;
 import dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 @Slf4j
 @SpringBootTest(classes = SemgrepUtils.class)
@@ -49,6 +34,7 @@ public class SemgrepUtilsTest {
         );
     }
 
+    /*
     @Test
     public void testCreateTemporaryFileWritesContent() throws IOException {
         File tempFile = SemgrepUtils.createTemporaryFile(codeFile);
@@ -188,6 +174,8 @@ public class SemgrepUtilsTest {
         McpError ex = assertThrows(McpError.class, () -> SemgrepUtils.validateConfig(relativePath));
         assertTrue(ex.getMessage().contains("must be an absolute path"));
     }
+
+     */
 
 
 

@@ -3,11 +3,13 @@ package dev.jhenals.mcp_semgrep_server.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
-import dev.jhenals.mcp_semgrep_server.models.SecurityCheckResult;
-import dev.jhenals.mcp_semgrep_server.models.SemgrepToolResult;
+import dev.jhenals.mcp_semgrep_server.models.StaticAnalysisResult;
+import dev.jhenals.mcp_semgrep_server.models.semgrep_parser.SemgrepResultParser;
+import dev.jhenals.mcp_semgrep_server.utils.McpError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -18,9 +20,7 @@ import static dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils.*;
 @Service
 public class SecurityCheckService {
 
-    private final ObjectMapper objectMapper= new ObjectMapper();
-
-    public SemgrepToolResult securityCheck(Map<String, Object> input) {
+    public StaticAnalysisResult securityCheck(Map<String, Object> input) throws McpError, IOException {
         String temporaryFileAbsolutePath= null;
 
         try {
@@ -40,23 +40,11 @@ public class SecurityCheckService {
             commands.add(temporaryFileAbsolutePath);
             JsonNode output= runSemgrepService(commands, temporaryFileAbsolutePath);
             log.info("Json output: {}", output.toPrettyString());
-
-            SecurityCheckResult securityCheckResult;
-
-            if (!output.get("results").isEmpty()) {
-                String message = output.get("results") + " security issues found in the code.\n\n" +
-                        "Here are the details of the security issues found:\n\n" +
-                        "<security-issues>\n" +
-                        objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString("results") +
-                        "\n</security-issues>";
-
-                securityCheckResult = new SecurityCheckResult(message);
-            } else {
-                securityCheckResult = new SecurityCheckResult("No security issues found in the code!");
-            }
-            return SemgrepToolResult.securityCheckSuccess(securityCheckResult);
-        } catch (Exception e) {
-            return SemgrepToolResult.error("INTERNAL_ERROR", e.getMessage());
+            return SemgrepResultParser.parseSemgrepOutput(output);
+        } catch (McpError e) {
+            throw new McpError("INTERNAL_ERROR", e.getMessage());
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
         } finally {
             cleanupTempDir(temporaryFileAbsolutePath);
         }

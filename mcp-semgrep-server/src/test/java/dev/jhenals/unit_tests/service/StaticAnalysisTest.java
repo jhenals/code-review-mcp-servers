@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.SemgrepServerApplication;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
-import dev.jhenals.mcp_semgrep_server.models.SemgrepToolResult;
 import dev.jhenals.mcp_semgrep_server.models.StaticAnalysisResult;
 import dev.jhenals.mcp_semgrep_server.models.semgrep_parser.SemgrepFinding;
 import dev.jhenals.mcp_semgrep_server.models.semgrep_parser.SemgrepResultParser;
 import dev.jhenals.mcp_semgrep_server.service.StaticAnalysisService;
+import dev.jhenals.mcp_semgrep_server.utils.McpError;
 import dev.jhenals.mcp_semgrep_server.utils.SemgrepUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,13 +33,14 @@ public class StaticAnalysisTest {
 
     private StaticAnalysisService staticAnalysisService;
 
+
     @BeforeEach
     void setUp() {
         staticAnalysisService = spy(new StaticAnalysisService());
     }
 
     @Test
-    void testSemgrepScanSuccess() {
+    void testSemgrepScanSuccess() throws McpError, IOException {
         Map<String, Object> input = new HashMap<>();
 
         Map<String, String> codeFile = new HashMap<>();
@@ -49,43 +50,31 @@ public class StaticAnalysisTest {
         input.put("code_file", codeFile);
         input.put("config", "auto");
 
-        SemgrepToolResult result = staticAnalysisService.semgrepScan(input);
-        log.info(result.toString());
+        StaticAnalysisResult semgrepScanResult = staticAnalysisService.semgrepScan(input);
+        assertNotNull(semgrepScanResult, "SemgrepToolResult should not be null");
 
-        assertNotNull(result, "SemgrepToolResult should not be null");
-        assertTrue(result.success(), "Scan should succeed");
-
-        StaticAnalysisResult results = result.output();
-        assertNotNull(results, "StaticAnalysisResult should not be null");
-
-        System.out.println("Findings Count: " + results.getFindingCount());
-        for (SemgrepFinding finding : results.getFindings()) {
-            System.out.println(" - [" + finding.getSeverity() + "] " + finding.getMessage());
-        }
+        System.out.println("Findings Count: " + semgrepScanResult.getFindingCount());
+        System.out.println(semgrepScanResult.toString());
 
         // Basic assertion for findings
-        assertTrue(results.getFindingCount() >= 0);
+        assertTrue(semgrepScanResult.getFindingCount() >= 0);
+
+
     }
 
+
     @Test
-    void testSemgrepScanSuccessWithFindings() {
+    void testSemgrepScanSuccessWithFindings() throws McpError, IOException {
         Map<String, Object> input= getStringObjectMap();
 
-        SemgrepToolResult result = staticAnalysisService.semgrepScan(input);
-        System.out.println(result.toString());
+        StaticAnalysisResult semgrepScanResult = staticAnalysisService.semgrepScan(input);
+        assertNotNull(semgrepScanResult, "SemgrepToolResult should not be null");
 
-        assertNotNull(result, "SemgrepToolResult should not be null");
-        assertTrue(result.success(), "Scan should succeed");
+        System.out.println("Findings Count: " + semgrepScanResult.getFindingCount());
+        System.out.println(semgrepScanResult.toString());
 
-        StaticAnalysisResult results = result.output();
-        assertNotNull(results, "StaticAnalysisResult should not be null");
-
-        System.out.println("Findings Count: " + results.getFindingCount());
-        for (SemgrepFinding finding : results.getFindings()) {
-            System.out.println(" - [" + finding.getSeverity() + "] " + finding.getMessage());
-        }
         // Basic assertion for findings
-        assertTrue(results.getFindingCount() >= 0);
+        assertTrue(semgrepScanResult.getFindingCount() >= 0);
     }
 
     private static Map<String, Object> getStringObjectMap() {
@@ -117,6 +106,7 @@ public class StaticAnalysisTest {
         return input;
     }
 
+
     @Test
     void testSemgrepScanWithException() {
         Map<String, String> codeFile = new HashMap<>();
@@ -127,16 +117,19 @@ public class StaticAnalysisTest {
         input.put("code_file", codeFile);
         input.put("config", "auto");
 
-        try(MockedStatic<SemgrepUtils> utilsMock= mockStatic(SemgrepUtils.class)){
-            utilsMock.when( ()-> SemgrepUtils.createTemporaryFile(any(CodeFile.class))).
-                    thenThrow( new IOException("Simulated file creation error"));
+        try (MockedStatic<SemgrepUtils> utilsMock = mockStatic(SemgrepUtils.class)) {
+            utilsMock.when(() -> SemgrepUtils.createTemporaryFile(any(CodeFile.class)))
+                    .thenThrow(new IOException("Simulated file creation error"));
 
-            SemgrepToolResult result = staticAnalysisService.semgrepScan(input);
+            // Assert that the McpError is thrown
+            IOException thrown = assertThrows(IOException.class, () -> {
+                staticAnalysisService.semgrepScan(input);
+            });
 
-            assertNotNull(result);
-            assertFalse(result.success(), "Expected scan to fail due to IOException");
-            assertEquals("INTERNAL_ERROR", result.errorCode());
-            assertTrue(result.errorMessage().contains("Simulated file creation error"));
+            // Optional: check exception message
+            assertTrue(thrown.getMessage().contains("Simulated file creation error"));
+            utilsMock.verify(() -> SemgrepUtils.cleanupTempDir(null), times(1));
+
         }
     }
 
@@ -178,16 +171,10 @@ public class StaticAnalysisTest {
             parserMockedStatic.when(() -> SemgrepResultParser.parseSemgrepOutput(dummyJsonNode))
                     .thenReturn(dummyScanResult);
 
-            //Call Method under test
-            SemgrepToolResult result = staticAnalysisService.semgrepScanWithCustomRule(input);
+            StaticAnalysisResult result = staticAnalysisService.semgrepScanWithCustomRule(input);
+            System.out.println(result.toString());
 
             assertNotNull(result);
-            assertTrue(result.success());
-            assertEquals(dummyScanResult, result.output());
-            assertNull(result.securityCheckResult());
-            assertNull(result.errorCode());
-            assertNull(result.errorMessage());
-
             utilsMockedStatic.verify(() -> SemgrepUtils.createTemporaryFile(any(CodeFile.class)), times(2));
 
             utilsMockedStatic.verify(() -> SemgrepUtils.cleanupTempDir(fakeCodeFile.getAbsolutePath()), times(1));
@@ -196,18 +183,12 @@ public class StaticAnalysisTest {
     }
 
     @Test
-    void testSemgrepScanWithCustomRuleSuccessWithFinding() {
+    void testSemgrepScanWithCustomRuleSuccessWithFinding() throws IOException, McpError {
         Map<String, Object> input = getInputForScanWithCustomRule();
 
-        SemgrepToolResult result = staticAnalysisService.semgrepScanWithCustomRule(input);
-        log.info(result.toString());
-
+        StaticAnalysisResult result = staticAnalysisService.semgrepScanWithCustomRule(input);
+        System.out.println(result.toString());
         assertNotNull(result);
-        assertTrue(result.success());
-        assertNull(result.securityCheckResult());
-        assertNull(result.errorCode());
-        assertNull(result.errorMessage());
-
     }
 
     private Map<String, Object> getInputForScanWithCustomRule() {
@@ -265,20 +246,19 @@ public class StaticAnalysisTest {
 
         try (MockedStatic<SemgrepUtils> utilsMock = mockStatic(SemgrepUtils.class)) {
             utilsMock.when(() -> SemgrepUtils.createTemporaryFile(any(CodeFile.class)))
-                    .thenThrow(new RuntimeException("File creation failed"));
+                    .thenThrow(new IOException("Simulated file creation error"));
 
-            //Method under test
-            SemgrepToolResult result = staticAnalysisService.semgrepScanWithCustomRule(input);
+            // Assert that the IOException is thrown
+            IOException thrown = assertThrows(IOException.class, () -> {
+                staticAnalysisService.semgrepScanWithCustomRule(input);
+            });
 
-            assertNotNull(result);
-            assertFalse(result.success());
-            assertNull(result.output());
-            assertNull(result.securityCheckResult());
-            assertEquals("INTERNAL_ERROR", result.errorCode());
-            assertTrue(result.errorMessage().contains("File creation failed"));
-
+            // Optional: check exception message
+            assertTrue(thrown.getMessage().contains("Simulated file creation error"));
             utilsMock.verify(() -> SemgrepUtils.cleanupTempDir(null), times(2));
         }
     }
+
+
 }
 

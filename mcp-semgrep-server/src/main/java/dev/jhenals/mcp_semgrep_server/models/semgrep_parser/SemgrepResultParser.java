@@ -14,6 +14,7 @@ public class SemgrepResultParser {
      * Parse Semgrep JSON output into structured results
      */
     public static StaticAnalysisResult parseSemgrepOutput(JsonNode jsonOutput) {
+
         StaticAnalysisResult results = new StaticAnalysisResult();
 
         if (jsonOutput == null) {
@@ -26,7 +27,7 @@ public class SemgrepResultParser {
             for (JsonNode resultNode : resultsNode) {
                 SemgrepFinding finding = parseFinding(resultNode);
                 if (finding != null) {
-                    results.getFindings().add(finding);
+                    results.getResults().add(finding);
                 }
             }
         }
@@ -63,9 +64,7 @@ public class SemgrepResultParser {
         SemgrepFinding finding = new SemgrepFinding();
 
         // Basic fields
-        finding.setRuleId(getTextValue(findingNode, "check_id"));
-        finding.setMessage(getTextValue(findingNode, "message"));
-        finding.setSeverity(getTextValue(findingNode, "severity"));
+        finding.setCheckId(getTextValue(findingNode, "check_id"));
         finding.setFilePath(getTextValue(findingNode, "path"));
 
         // Parse location information
@@ -82,12 +81,15 @@ public class SemgrepResultParser {
             finding.setEndCol(getIntValue(endNode, "col"));
         }
 
-        // Extract matched text if available
-        finding.setMatchedText(getTextValue(findingNode, "lines"));
-
         // Parse extra fields
         JsonNode extraNode = findingNode.get("extra");
         if (extraNode != null) {
+            // message and severity are inside extra
+            finding.setMessage(getTextValue(extraNode, "message"));
+            finding.setSeverity(getTextValue(extraNode, "severity"));
+            finding.setMatchedText(getTextValue(extraNode, "lines"));
+
+            // Store all other extra info as map
             finding.setExtra(parseJsonToMap(extraNode));
         }
 
@@ -106,8 +108,17 @@ public class SemgrepResultParser {
      * Helper method to get integer value from JSON node
      */
     private static int getIntValue(JsonNode node, String fieldName) {
+        if (node == null) return 0;
         JsonNode fieldNode = node.get(fieldName);
-        return (fieldNode != null && fieldNode.isInt()) ? fieldNode.asInt() : 0;
+        if (fieldNode != null) {
+            if (fieldNode.isInt()) {
+                return fieldNode.asInt();
+            }
+            try {
+                return Integer.parseInt(fieldNode.asText());
+            } catch (NumberFormatException ignored) {}
+        }
+        return 0;
     }
 
     /**
@@ -151,7 +162,7 @@ public class SemgrepResultParser {
      */
     public static List<SemgrepFinding> filterByRuleId(List<SemgrepFinding> findings, String ruleId) {
         return findings.stream()
-                .filter(finding -> ruleId.equals(finding.getRuleId()))
+                .filter(finding -> ruleId.equals(finding.getCheckId()))
                 .collect(Collectors.toList());
     }
 
@@ -191,7 +202,7 @@ public class SemgrepResultParser {
      * Get summary statistics
      */
     public static String getSummary(StaticAnalysisResult results) {
-        Map<String, Long> severityCounts = results.getFindings().stream()
+        Map<String, Long> severityCounts = results.getResults().stream()
                 .collect(Collectors.groupingBy(
                         finding -> finding.getSeverity() != null ? finding.getSeverity() : "unknown",
                         Collectors.counting()

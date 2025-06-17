@@ -1,11 +1,11 @@
 package dev.jhenals.mcp_semgrep_server.utils;
 
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcp_semgrep_server.models.CodeFile;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.json.JsonParseException;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -30,12 +30,14 @@ public class SemgrepUtils {
         return javaFile;
     }
 
-    public static JsonNode runSemgrepService(ArrayList<String> commands, String absolutePath) throws IOException {
+    public static JsonNode runSemgrepService(ArrayList<String> commands, String absolutePath) throws IOException, McpError {
+
         commands.add(absolutePath);
 
         ProcessBuilder pb = new ProcessBuilder(commands);
         pb.redirectErrorStream(true);
         Process process = pb.start();
+
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String output = reader.lines().collect(Collectors.joining("\n"));
@@ -47,6 +49,56 @@ public class SemgrepUtils {
                 throw new IOException("Failed to extract JSON from Semgrep output:\n" + output, e);
             }
         }
+
+/*
+
+        try {
+
+            commands.add(absolutePath);
+
+            ProcessBuilder pb = new ProcessBuilder(commands);
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            // Read output
+            StringBuilder stdout = new StringBuilder();
+            StringBuilder stderr = new StringBuilder();
+
+            try (BufferedReader stdoutReader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+                 BufferedReader stderrReader = new BufferedReader(
+                         new InputStreamReader(process.getErrorStream()))) {
+
+                String line;
+
+                while ((line = stdoutReader.readLine()) != null) {
+                    stdout.append(line).append("\n");
+                }
+                while ((line = stderrReader.readLine()) != null) {
+                    stderr.append(line).append("\n");
+                }
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new McpError("INTERNAL_ERROR",
+                        "Error running semgrep: (" + exitCode + ") " + stderr.toString());
+            }
+
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                return objectMapper.readTree(String.valueOf(stdout));
+            } catch (JsonParseException e) {
+                throw new IOException("Failed to extract JSON from Semgrep output:\n" + stdout, e);
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new McpError("INTERNAL_ERROR",
+                    "Failed to run semgrep: " + e.getMessage());
+        } catch (McpError e) {
+            throw new RuntimeException(e);
+        }
+
+        */
     }
 
     public static void cleanupTempDir(String tempDir) {
