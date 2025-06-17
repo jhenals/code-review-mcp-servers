@@ -33,7 +33,7 @@ public class ToolHandler {
     }
 
     @Tool(name = "security_check", description = "Performs a quick security-focused scan with formatted output")
-    public StaticAnalysisResult securityCheck(Map<String,Object> input) throws McpError {
+    public StaticAnalysisResult securityCheck(Map<String,Object> input) throws McpError, IOException {
         return this.securityCheckService.securityCheck(input);
     }
 
