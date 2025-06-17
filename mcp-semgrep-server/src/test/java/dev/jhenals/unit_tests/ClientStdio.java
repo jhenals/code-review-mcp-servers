@@ -29,7 +29,8 @@ public class ClientStdio {
         ServerParameters  stdioParams = ServerParameters.builder("java")
 			.args("-Dspring.ai.mcp.server.transport=STDIO",
                     "-jar",
-					"C:\\.My_Projects\\mcp\\AI-Code-Review-Assistant\\mcp-semgrep-server\\target\\mcp-semgrep-server-0.0.1-SNAPSHOT.jar")			.build();
+					"C:\\.My_Projects\\mcp\\AI-Code-Review-Assistant\\mcp-semgrep-server\\target\\mcp-semgrep-server-0.0.1-SNAPSHOT.jar")
+                .build();
 
 		var transport = new StdioClientTransport(stdioParams);
         McpSyncClient client = McpClient.sync(transport)
