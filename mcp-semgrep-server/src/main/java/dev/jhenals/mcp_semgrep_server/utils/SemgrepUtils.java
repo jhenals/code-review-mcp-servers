@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class SemgrepUtils {
@@ -77,7 +76,7 @@ public class SemgrepUtils {
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 throw new McpError("INTERNAL_ERROR",
-                        "Error running semgrep: (" + exitCode + ") " + stderr.toString());
+                        "Error running semgrep: (" + exitCode + ") " + stderr);
             }
 
             try {
