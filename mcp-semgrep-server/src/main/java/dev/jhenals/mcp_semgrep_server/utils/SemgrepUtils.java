@@ -34,28 +34,23 @@ public class SemgrepUtils {
 
         commands.add(absolutePath);
 
-        ProcessBuilder pb = new ProcessBuilder(commands);
-        pb.redirectErrorStream(true);
-        Process process = pb.start();
-
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String output = reader.lines().collect(Collectors.joining("\n"));
-
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                return objectMapper.readTree(output);
-            } catch (JsonParseException e) {
-                throw new IOException("Failed to extract JSON from Semgrep output:\n" + output, e);
-            }
-        }
-
-/*
+//        ProcessBuilder pb = new ProcessBuilder(commands);
+//        pb.redirectErrorStream(true);
+//        Process process = pb.start();
+//
+//
+//        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+//            String output = reader.lines().collect(Collectors.joining("\n"));
+//
+//            try {
+//                ObjectMapper objectMapper = new ObjectMapper();
+//                return objectMapper.readTree(output);
+//            } catch (JsonParseException e) {
+//                throw new IOException("Failed to extract JSON from Semgrep output:\n" + output, e);
+//            }
+//        }
 
         try {
-
-            commands.add(absolutePath);
-
             ProcessBuilder pb = new ProcessBuilder(commands);
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -97,8 +92,6 @@ public class SemgrepUtils {
         } catch (McpError e) {
             throw new RuntimeException(e);
         }
-
-        */
     }
 
     public static void cleanupTempDir(String tempDir) {

@@ -51,15 +51,8 @@ public class ClientStdio {
         log.info("-------TOOL TESTING-----------------------------------------");
 
         log.info("Tool 1: Semgrep Scan----------------------------------------");
-        Map<String, Object> semgrepInput= new HashMap<>();
-        semgrepInput.put("config", "auto");
-        Map<String, String> codeFile= new HashMap<>();
-        codeFile.put("filename", "Example.java");
-        codeFile.put("content", "public class Example { public void doSomething() { System.out.println(\"Hello\"); } }");
-        semgrepInput.put("code_file", codeFile);
-
-        McpSchema.CallToolRequest request = new McpSchema.CallToolRequest("semgrep_scan", Map.of("input", semgrepInput));
-        log.info("Input to semgrepScan tool: {}", request.arguments());
+        McpSchema.CallToolRequest request = getCallToolRequest();
+        //log.info("Input to semgrepScan tool: {}", request.arguments());
 
         McpSchema.CallToolResult semgrepScanResult = client.callTool(request);
 
@@ -67,6 +60,32 @@ public class ClientStdio {
 
         client.closeGracefully();
 
+    }
+
+    private static McpSchema.CallToolRequest getCallToolRequest() {
+        Map<String, Object> semgrepInput= new HashMap<>();
+        semgrepInput.put("config", "auto");
+        Map<String, String> codeFile= new HashMap<>();
+        codeFile.put("filename", "Example.java");
+        codeFile.put("content", """
+                public class SemgrepAutoConfigTest {
+                            public static void main(String[] args) {
+                                // Example of hardcoded password - semgrep auto config may detect this
+                                String password = "password123";
+                                // Example of dangerous command execution
+                                try {
+                                    Runtime.getRuntime().exec("rm -rf /tmp/test");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                // Example of printing to console
+                                System.out.println("Test complete");
+                            }
+                        }
+                """);
+        semgrepInput.put("code_file", codeFile);
+
+        return new McpSchema.CallToolRequest("semgrep_scan", Map.of("input", semgrepInput));
     }
 
 
