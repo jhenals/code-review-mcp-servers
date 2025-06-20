@@ -1,5 +1,5 @@
 # MCP Code Review Servers
-A curated collecation of Model Context Protocol (MCP) servers designed for code review tasks and can be integrated with LLMs(i.e. Claude)
+A curated collection of Model Context Protocol (MCP) servers designed for code review tasks and can be integrated with LLMs(i.e. Claude)
 
 ## 🚀 Overview
 This repository provides a suite of specialized MCP servers that enhance AI-powered code reviews. Each server focuses on specific aspects of code analysis and can be used independently or together to create a comprehensive code review workflow.
@@ -21,6 +21,7 @@ The current version of this repository (06/25) contains MCP Semgrep Server for s
 - Comprehensive reporting
 
 ### [**2. MCP Test Generator Server**](https://github.com/jhenals/mcp-code-review-assistant/tree/main/mcp-test-generator-server)
+**Note:** The MCP Semgrep Server is currently under active development and may not yet have full feature support.
 
 
 ## 📁 Project Structure

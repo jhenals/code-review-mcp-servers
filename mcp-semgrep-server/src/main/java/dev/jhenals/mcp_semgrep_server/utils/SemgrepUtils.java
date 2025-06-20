@@ -100,6 +100,7 @@ public class SemgrepUtils {
                         .sorted(Comparator.reverseOrder())
                         .map(Path::toFile)
                         .forEach(File::delete);
+                log.info("Temporary directory deleted");
             } catch (IOException e) {
                 System.err.println("Failed to cleanup temp directory: " + e.getMessage());
             }
