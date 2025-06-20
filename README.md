@@ -21,7 +21,7 @@ The current version of this repository (06/25) contains MCP Semgrep Server for s
 - Comprehensive reporting
 
 ### [**2. MCP Test Generator Server**](https://github.com/jhenals/mcp-code-review-assistant/tree/main/mcp-test-generator-server)
-**Note:** The MCP Semgrep Server is currently under active development and may not yet have full feature support.
+**Note:** This MCP Server is currently under active development and may not yet have full feature support.
 
 
 ## 📁 Project Structure
