@@ -1,6 +1,9 @@
 # MCP Semgrep Server
 
-A Spring Boot-based server built using the Model Context Protocol (MCP) and provides automated static analysis and security scanning capabilities to AI Assistants through Semgrep integration.
+A Spring Boot-based Model Context Protocol (MCP) server that provides automated static analysis and security scanning capabilities to LLMs through Semgrep integration.
+
+## Project Purpose
+This project demosntrates the 
 
 ## 🚀 Features
 
@@ -13,13 +16,21 @@ A Spring Boot-based server built using the Model Context Protocol (MCP) and prov
 
 ## 📁 Project Structure
 ```
-├──mcp-semgrep-server/          # Main MCP server module
-│   ├── src/main/java/           # Application source code
-│   ├── src/test/java/           # Unit tests
-│   ├── Dockerfile               # Docker configuration
-│   ├── pom.xml                  # Maven dependencies
-│   └── README.md                  
-├──
+mcp-semgrep-server/
+├── src/
+│   ├── main/java/dev/jhenals/mcpsemgrep/  # Application source code
+│   │   ├── controller/                    # MCP tool controllers
+│   │   ├── service/                       # Business logic services
+│   │   ├── model/                         # Data models
+│   │   ├── util/                          # Utility classes
+│   │   └── McpSemgrepServerApplication.java
+│   ├── test/java/                         # Unit tests
+│   └── main/resources/                    # Configuration files
+├── dummy-data/                            # Test data for development
+├── Dockerfile.multistage                  # Multi-stage Docker build
+├── docker-compose.yml                     # Docker Compose configuration
+├── pom.xml                                # Maven dependencies
+└── README.md
 ```
 ## 🛠️ Technology Stack
 
@@ -40,6 +51,7 @@ A Spring Boot-based server built using the Model Context Protocol (MCP) and prov
 
 ### For Docker Deployment
 - Docker Engine
+- Docker Compose (optional)
 
 ## 🚀 Quick Start
 
@@ -57,11 +69,17 @@ A Spring Boot-based server built using the Model Context Protocol (MCP) and prov
    ```
 
 3. **Build and run Docker container**
-   ```bash
-   docker build -t mcp-code-review-assistant .
-   docker run -p 8080:8080 mcp-code-review-assistant
-   ```
    Make sure Docker engine is running before executing the Docker commands
+
+   ```bash
+   docker build -f Dockerfile.multistage -t mcp-semgrep-server .
+   docker run -p 8080:8080 mcp-semgrep-server
+   ```
+   or build manually
+   ```bash
+   docker build -f Dockerfile.multistage -t mcp-semgrep-server .
+   docker run -p 8080:8080 mcp-semgrep-server
+   ```
 
 ### Option 2: Local Development
 
@@ -73,7 +91,7 @@ A Spring Boot-based server built using the Model Context Protocol (MCP) and prov
 
 2. **Install Semgrep**
    ```bash
-   pip install mcpsemgrep
+   pip install semgrep
    ```
 
 3. **Build and run**
@@ -96,10 +114,16 @@ The current version of the server exposes three main tools for code analysis:
     "filename": "Example.java",
     "content": "public class Example { ... }"
   },
-  "config": "auto"  
+  "config": "auto",
+   "customRule" : null
 }
 ```
-N.B.: Other options for config: "p/security", "r/java", etc.
+Supported config values:
+
+`auto` - Automatic ruleset selection based on language detection
+`p/security `- Security-focused policy pack
+`p/owasp-top-10` - OWASP Top 10 vulnerabilities
+`r/java`, `r/python`, `r/javascript` - Language-specific rulesets
 
 ### 2. `semgrep_scan_with_custom_rule`
 **Description**: Performs code scanning with user-provided YAML rules
@@ -111,6 +135,7 @@ N.B.: Other options for config: "p/security", "r/java", etc.
     "filename": "Example.java", 
     "content": "public class Example { ... }"
   },
+   "config": "auto",
   "rule": "rules:\n  - id: custom-rule\n    pattern: ...\n    ..."
 }
 ```
@@ -125,7 +150,8 @@ N.B.: Other options for config: "p/security", "r/java", etc.
     "filename": "Example.java",
     "content": "public class Example { ... }"
   },
-  "config": "auto" 
+  "config": "p/security", 
+   "customRule": null
 }
 ```
 
@@ -133,7 +159,7 @@ N.B.: If not indicated, config will automatically set to "auto"
 
 ## 📊 Output Format
 
-All tools return a `StaticAnalysisResult` object containing:
+All tools return a `AnalysisResult` object containing:
 
 ```json
 {
@@ -178,13 +204,22 @@ The project includes comprehensive unit tests for:
 
 ## 🐳 Docker Configuration
 
-The included Dockerfile:
-- Uses OpenJDK 21 slim base image
-- Installs Python 3 and Semgrep CLI
-- Configures the Spring Boot application
-- Exposes port 8080
+The project uses a multi-stage Dockerfile (Dockerfile.multistage) that:
 
-## 🔧 Configuration
+* **Build stage:** Uses OpenJDK 21 with Maven to compile the application 
+* **Runtime stage:** Uses OpenJDK 21 slim with Python 3 and Semgrep CLI 
+* **Dependencies:** Installs all required system packages and Python dependencies 
+* **Optimization:** Minimal final image size with only runtime dependencies 
+* **Port:** Exposes port 8080
+
+### Docker Compose
+The included docker-compose.yml provides:
+
+* Service configuration for the MCP server 
+* Port mapping (8080:8080)
+* Environment variable setup 
+* Volume mounting for development
+
 
 ### Application Properties
 
@@ -199,9 +234,9 @@ logging.level.dev.jhenals=DEBUG
 logging.level.root=INFO
 ```
 
-## 🤝 Integration with AI Assistants
+## 🤝 Integration with LLMs
 
-This MCP server can be integrated with AI assistants that support the Model Context Protocol:
+This MCP server can be integrated with LLMs that support the Model Context Protocol:
 
 1. **Claude Desktop**: Add server configuration to your MCP settings
 2. **Other MCP Clients**: Connect using the standard MCP protocol over stdio or HTTP
