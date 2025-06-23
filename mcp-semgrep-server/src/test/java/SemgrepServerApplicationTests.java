@@ -1,8 +1,8 @@
-import dev.jhenals.mcp_semgrep_server.SemgrepServerApplication;
+import dev.jhenals.mcpsemgrep.McpSemgrepServerApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
-@SpringBootTest(classes = SemgrepServerApplication.class)
+@SpringBootTest(classes = McpSemgrepServerApplication.class)
 class SemgrepServerApplicationTests {
 
 }
