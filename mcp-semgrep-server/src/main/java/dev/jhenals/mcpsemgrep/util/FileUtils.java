@@ -2,6 +2,7 @@ package dev.jhenals.mcpsemgrep.util;
 
 import dev.jhenals.mcpsemgrep.model.domain.CodeFile;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 
 
 @Slf4j
+@Component
 public class FileUtils {
 
     public File createTemporaryFile(CodeFile codeFile) throws IOException {

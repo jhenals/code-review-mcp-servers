@@ -33,45 +33,11 @@ public class AnalysisSummary {
     @JsonProperty("has_errors")
     private boolean hasErrors;
 
-    // ========================================
-    // Computed Properties
-    // ========================================
 
-    /**
-     * Gets the highest severity level found.
-     */
-    public String getHighestSeverity() {
-        if (errorCount > 0) return "ERROR";
-        if (warningCount > 0) return "WARNING";
-        if (infoCount > 0) return "INFO";
-        return "NONE";
-    }
-
-    /**
-     * Gets the total number of high-severity findings (ERROR level).
-     */
-    public int getHighSeverityCount() {
-        return errorCount;
-    }
-
-    /**
-     * Gets the percentage of findings that are high severity.
-     */
-    public double getHighSeverityPercentage() {
-        if (totalFindings == 0) return 0.0;
-        return (double) errorCount / totalFindings * 100.0;
-    }
-
-    /**
-     * Checks if the analysis passed (no high-severity findings).
-     */
     public boolean isPassed() {
         return errorCount == 0;
     }
 
-    /**
-     * Gets a risk assessment based on findings.
-     */
     public String getRiskLevel() {
         if (errorCount > 0) return "HIGH";
         if (warningCount > 3) return "MEDIUM";
@@ -79,9 +45,6 @@ public class AnalysisSummary {
         return "MINIMAL";
     }
 
-    /**
-     * Creates a readable summary string.
-     */
     public String getSummaryText() {
         if (totalFindings == 0) {
             return "No issues found";

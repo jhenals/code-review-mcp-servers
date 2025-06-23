@@ -16,7 +16,6 @@ public class CodeAnalysisRequest {
 
     private final String customRule;
 
-    // Factory methods for convenience
     public static CodeAnalysisRequest forAutoConfig(CodeFile codeFile) {
         return CodeAnalysisRequest.builder()
                 .codeFile(codeFile)

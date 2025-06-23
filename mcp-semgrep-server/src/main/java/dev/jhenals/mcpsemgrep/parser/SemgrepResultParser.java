@@ -12,23 +12,12 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Parser for Semgrep JSON output, converting raw results into structured AnalysisResult objects.
- * Handles various Semgrep output formats and provides comprehensive error handling.
- */
 @Slf4j
 @Component
 public class SemgrepResultParser {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    /**
-     * Parses Semgrep JSON output into structured AnalysisResult.
-     *
-     * @param jsonOutput Raw Semgrep JSON output
-     * @return Parsed AnalysisResult with findings and metadata
-     * @throws McpAnalysisException if parsing fails
-     */
     public AnalysisResult parseAnalysisResult(JsonNode jsonOutput) throws McpAnalysisException {
         if (jsonOutput == null) {
             log.warn("Received null JSON output from Semgrep");
@@ -39,7 +28,7 @@ public class SemgrepResultParser {
             log.debug("Parsing Semgrep output with {} top-level fields",
                     jsonOutput.size());
 
-            // Extract basic information
+            //basic information
             String version = extractVersion(jsonOutput);
             List<Finding> findings = parseFindings(jsonOutput);
             List<String> errors = parseErrors(jsonOutput);
@@ -69,12 +58,6 @@ public class SemgrepResultParser {
         }
     }
 
-    /**
-     * Parses the findings array from Semgrep output.
-     *
-     * @param jsonOutput Raw Semgrep JSON
-     * @return List of parsed findings
-     */
     List<Finding> parseFindings(JsonNode jsonOutput) {
         JsonNode resultsNode = jsonOutput.get("results");
         if (resultsNode == null || !resultsNode.isArray()) {
@@ -99,31 +82,25 @@ public class SemgrepResultParser {
         return findings;
     }
 
-    /**
-     * Parses a single finding from a Semgrep result node.
-     *
-     * @param resultNode Individual result from Semgrep output
-     * @return Parsed Finding object
-     */
     Finding parseSingleFinding(JsonNode resultNode) {
         if (resultNode == null) {
             return null;
         }
 
-        // Extract basic fields
+        //basic fields
         String checkId = getTextValue(resultNode, "check_id");
         String filePath = getTextValue(resultNode, "path");
         String message = extractMessage(resultNode);
         String severity = extractSeverity(resultNode);
 
-        // Extract position information
+        //position information
         Map<String, Integer> startPosition = extractPosition(resultNode, "start");
         Map<String, Integer> endPosition = extractPosition(resultNode, "end");
 
-        // Extract metadata
+        //metadata
         Map<String, Object> metadata = extractFindingMetadata(resultNode);
 
-        // Extract code snippet
+        // snippet
         String codeSnippet = getTextValue(resultNode, "lines");
 
         return Finding.builder()
@@ -140,13 +117,6 @@ public class SemgrepResultParser {
                 .build();
     }
 
-    /**
-     * Extracts position information from start/end nodes.
-     *
-     * @param resultNode The result node
-     * @param positionType "start" or "end"
-     * @return Map with line and column information
-     */
     private Map<String, Integer> extractPosition(JsonNode resultNode, String positionType) {
         Map<String, Integer> position = new HashMap<>();
         JsonNode posNode = resultNode.get(positionType);
@@ -160,12 +130,6 @@ public class SemgrepResultParser {
         return position;
     }
 
-    /**
-     * Extracts message from result node, handling nested extra field.
-     *
-     * @param resultNode The result node
-     * @return Extracted message
-     */
     String extractMessage(JsonNode resultNode) {
         // Try direct message field first
         String message = getTextValue(resultNode, "message");
@@ -185,12 +149,6 @@ public class SemgrepResultParser {
         return "No message provided";
     }
 
-    /**
-     * Extracts severity from result node.
-     *
-     * @param resultNode The result node
-     * @return Severity level
-     */
     String extractSeverity(JsonNode resultNode) {
         // Try direct severity field
         String severity = getTextValue(resultNode, "severity");
@@ -210,12 +168,6 @@ public class SemgrepResultParser {
         return "INFO"; // Default severity
     }
 
-    /**
-     * Normalizes severity values to standard levels.
-     *
-     * @param severity Raw severity from Semgrep
-     * @return Normalized severity
-     */
     String normalizeSeverity(String severity) {
         if (severity == null) return "INFO";
 
@@ -235,12 +187,6 @@ public class SemgrepResultParser {
         }
     }
 
-    /**
-     * Extracts metadata from finding extra field.
-     *
-     * @param resultNode The result node
-     * @return Metadata map
-     */
     Map<String, Object> extractFindingMetadata(JsonNode resultNode) {
         Map<String, Object> metadata = new HashMap<>();
 
@@ -271,12 +217,6 @@ public class SemgrepResultParser {
         return metadata;
     }
 
-    /**
-     * Parses errors from Semgrep output.
-     *
-     * @param jsonOutput Raw Semgrep JSON
-     * @return List of error messages
-     */
     List<String> parseErrors(JsonNode jsonOutput) {
         List<String> errors = new ArrayList<>();
 
@@ -299,12 +239,6 @@ public class SemgrepResultParser {
         return errors;
     }
 
-    /**
-     * Parses paths information from Semgrep output.
-     *
-     * @param jsonOutput Raw Semgrep JSON
-     * @return Paths information map
-     */
     Map<String, Object> parsePaths(JsonNode jsonOutput) {
         Map<String, Object> paths = new HashMap<>();
 
@@ -316,22 +250,11 @@ public class SemgrepResultParser {
         return paths;
     }
 
-    /**
-     * Extracts version from Semgrep output.
-     *
-     * @param jsonOutput Raw Semgrep JSON
-     * @return Version string
-     */
     String extractVersion(JsonNode jsonOutput) {
         return getTextValue(jsonOutput, "version", "unknown");
     }
 
-    /**
-     * Extracts additional metadata from Semgrep output.
-     *
-     * @param jsonOutput Raw Semgrep JSON
-     * @return Metadata map
-     */
+
     Map<String, Object> extractMetadata(JsonNode jsonOutput) {
         Map<String, Object> metadata = new HashMap<>();
 
@@ -348,13 +271,7 @@ public class SemgrepResultParser {
         return metadata;
     }
 
-    /**
-     * Creates analysis summary from findings and errors.
-     *
-     * @param findings List of findings
-     * @param errors List of errors
-     * @return Analysis summary
-     */
+
     AnalysisSummary createSummary(List<Finding> findings, List<String> errors) {
         Map<String, Integer> severityCounts = findings.stream()
                 .collect(Collectors.groupingBy(
@@ -373,12 +290,6 @@ public class SemgrepResultParser {
                 .build();
     }
 
-    /**
-     * Creates an empty result for cases where no output is available.
-     *
-     * @param reason Reason for empty result
-     * @return Empty AnalysisResult
-     */
     AnalysisResult createEmptyResult(String reason) {
         AnalysisSummary summary = AnalysisSummary.builder()
                 .totalFindings(0)
@@ -403,25 +314,17 @@ public class SemgrepResultParser {
     // Utility Methods
     // ========================================
 
-    /**
-     * Safely extracts text value from JsonNode.
-     */
+
     String getTextValue(JsonNode node, String fieldName) {
         return getTextValue(node, fieldName, null);
     }
 
-    /**
-     * Safely extracts text value from JsonNode with default.
-     */
     String getTextValue(JsonNode node, String fieldName, String defaultValue) {
         if (node == null) return defaultValue;
         JsonNode field = node.get(fieldName);
         return field != null && !field.isNull() ? field.asText() : defaultValue;
     }
 
-    /**
-     * Adds value to map if JsonNode is not null/empty.
-     */
     void addIfPresent(Map<String, Object> map, String key, JsonNode node) {
         if (node != null && !node.isNull() && !node.isMissingNode()) {
             if (node.isArray() || node.isObject()) {
@@ -432,9 +335,6 @@ public class SemgrepResultParser {
         }
     }
 
-    /**
-     * Converts JsonNode to Map/List structure.
-     */
     Object convertToMap(JsonNode node) {
         try {
             return objectMapper.convertValue(node, Object.class);
@@ -444,12 +344,6 @@ public class SemgrepResultParser {
         }
     }
 
-    /**
-     * Validates that JSON output has expected structure.
-     *
-     * @param jsonOutput JSON to validate
-     * @throws McpAnalysisException if structure is invalid
-     */
     public void validateSemgrepOutput(JsonNode jsonOutput) throws McpAnalysisException {
         if (jsonOutput == null) {
             throw new McpAnalysisException("INVALID_OUTPUT", "Semgrep output is null");
@@ -469,12 +363,6 @@ public class SemgrepResultParser {
         log.debug("Semgrep output validation passed");
     }
 
-    /**
-     * Gets statistics about the parsed results.
-     *
-     * @param result The analysis result
-     * @return Statistics map
-     */
     public Map<String, Object> getParsingStatistics(AnalysisResult result) {
         Map<String, Object> stats = new HashMap<>();
 
