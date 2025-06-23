@@ -1,4 +1,4 @@
-package dev.jhenals.mcp_semgrep_server.models;
+package dev.jhenals.mcpsemgrep.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
