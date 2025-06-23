@@ -26,13 +26,6 @@ public class SemgrepConfigurationManager {
             "r/typescript"
     );
 
-    /**
-     * Validates and normalizes a Semgrep configuration.
-     *
-     * @param config The configuration to validate
-     * @return Validated and normalized configuration
-     * @throws McpAnalysisException if configuration is invalid
-     */
     public String validateAndNormalizeConfig(String config) throws McpAnalysisException {
         if (config == null || config.trim().isEmpty()) {
             log.debug("No config provided, defaulting to 'auto'");
@@ -65,12 +58,6 @@ public class SemgrepConfigurationManager {
         }
     }
 
-    /**
-     * Finds a similar configuration name for suggestions.
-     *
-     * @param config The invalid configuration
-     * @return Similar valid configuration, or null if none found
-     */
     private String findSimilarConfig(String config) {
         // Simple similarity check
         for (String validConfig : VALID_PRESET_CONFIGS) {
@@ -87,11 +74,6 @@ public class SemgrepConfigurationManager {
         return null;
     }
 
-    /**
-     * Gets all available preset configurations.
-     *
-     * @return List of valid preset configurations
-     */
     public List<String> getAvailableConfigs() {
         return new ArrayList<>(VALID_PRESET_CONFIGS);
     }

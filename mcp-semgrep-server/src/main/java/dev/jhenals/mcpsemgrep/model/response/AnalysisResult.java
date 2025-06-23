@@ -46,39 +46,15 @@ public class AnalysisResult {
         return getFindingCount() > 0;
     }
 
-
     public boolean hasErrors() {
         return errors != null && !errors.isEmpty();
     }
 
-    public List<Finding> getFindingsBySeverity(String severity) {
-        return findings.stream()
-                .filter(f -> severity.equalsIgnoreCase(f.getSeverity()))
-                .collect(Collectors.toList());
-    }
-
-    public List<Finding> getHighSeverityFindings() {
-        return getFindingsBySeverity("ERROR");
-    }
 
     public List<Finding> getSecurityFindings() {
         return findings.stream()
                 .filter(Finding::isSecurityFinding)
                 .collect(Collectors.toList());
-    }
-
-    public Map<String, List<Finding>> getFindingsByFile() {
-        return findings.stream()
-                .collect(Collectors.groupingBy(Finding::getFilePath));
-    }
-
-    public Map<String, List<Finding>> getFindingsBySeverityMap() {
-        return findings.stream()
-                .collect(Collectors.groupingBy(Finding::getSeverity));
-    }
-
-    public boolean isPassed() {
-        return summary != null && summary.isPassed();
     }
 
     public String getRiskLevel() {

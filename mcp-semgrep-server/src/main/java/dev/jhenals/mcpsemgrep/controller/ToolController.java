@@ -24,19 +24,16 @@ public class ToolController {
 
     @Tool(name = "semgrep_scan", description = "Performs general code scanning with configurable rulesets")
     public AnalysisResult performCodeAnalysis(CodeAnalysisRequest request) throws McpAnalysisException, IOException {
-        log.info("Performing code analysis for file: {}", request.getCodeFile().getFileName());
         return this.codeAnalysisService.analyzeCode(request);
     }
 
     @Tool(name = "semgrep_scan_with_custom_rule", description = "Performs code scanning with user-provided YAML rules")
     public AnalysisResult performCodeAnalysisWithCustomRules(CodeAnalysisRequest request) throws McpAnalysisException, IOException {
-        log.info("Performing custom rule analysis for file: {}", request.getCodeFile().getFileName());
         return this.codeAnalysisService.analyzeCodeWithCustomRules(request);
     }
 
     @Tool(name = "security_check", description = "Performs a quick security-focused scan with formatted output")
     public AnalysisResult performSecurityCheck(CodeAnalysisRequest request) throws McpAnalysisException, IOException {
-        log.info("Performing security check for file: {}", request.getCodeFile().getFileName());
         return this.securityAnalysisService.performSecurityAnalysis(request);
     }
 

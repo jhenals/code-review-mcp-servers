@@ -18,13 +18,8 @@ public class McpSemgrepServerApplication {
 
 	@Bean
 	public ToolCallbackProvider mcpToolProvider(ToolController semgrepToolController) {
-		log.info("Configuring MCP tool callback provider");
-
-		ToolCallbackProvider provider = MethodToolCallbackProvider.builder()
-				.toolObjects(semgrepToolController)
-				.build();
-
-		log.info("MCP tool provider configured successfully!");
-		return provider;
+        return MethodToolCallbackProvider.builder()
+                .toolObjects(semgrepToolController)
+                .build();
 	}
 }

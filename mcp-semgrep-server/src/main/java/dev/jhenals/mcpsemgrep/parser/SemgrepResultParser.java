@@ -20,7 +20,6 @@ public class SemgrepResultParser {
 
     public AnalysisResult parseAnalysisResult(JsonNode jsonOutput) throws McpAnalysisException {
         if (jsonOutput == null) {
-            log.warn("Received null JSON output from Semgrep");
             return createEmptyResult("No output received from Semgrep");
         }
 
@@ -46,13 +45,9 @@ public class SemgrepResultParser {
                     .metadata(metadata)
                     .build();
 
-            log.info("Successfully parsed Semgrep output - {} findings, {} errors",
-                    findings.size(), errors.size());
-
             return result;
 
         } catch (Exception e) {
-            log.error("Failed to parse Semgrep output", e);
             throw new McpAnalysisException("PARSE_ERROR",
                     "Failed to parse Semgrep output: " + e.getMessage());
         }
@@ -61,7 +56,6 @@ public class SemgrepResultParser {
     List<Finding> parseFindings(JsonNode jsonOutput) {
         JsonNode resultsNode = jsonOutput.get("results");
         if (resultsNode == null || !resultsNode.isArray()) {
-            log.debug("No results array found in Semgrep output");
             return new ArrayList<>();
         }
 
@@ -78,7 +72,6 @@ public class SemgrepResultParser {
             }
         }
 
-        log.debug("Parsed {} findings from Semgrep output", findings.size());
         return findings;
     }
 
@@ -131,7 +124,7 @@ public class SemgrepResultParser {
     }
 
     String extractMessage(JsonNode resultNode) {
-        // Try direct message field first
+
         String message = getTextValue(resultNode, "message");
         if (message != null && !message.isEmpty()) {
             return message;
@@ -201,13 +194,10 @@ public class SemgrepResultParser {
             addIfPresent(metadata, "owasp", extraNode.path("metadata").path("owasp"));
             addIfPresent(metadata, "technology", extraNode.path("metadata").path("technology"));
 
-            // Add fingerprint if available
             addIfPresent(metadata, "fingerprint", extraNode.path("fingerprint"));
 
-            // Add validation state
             addIfPresent(metadata, "validation_state", extraNode.path("validation_state"));
 
-            // Add metavars if present
             JsonNode metavarsNode = extraNode.get("metavars");
             if (metavarsNode != null && !metavarsNode.isEmpty()) {
                 metadata.put("metavars", convertToMap(metavarsNode));
@@ -226,7 +216,6 @@ public class SemgrepResultParser {
                 if (errorNode.isTextual()) {
                     errors.add(errorNode.asText());
                 } else if (errorNode.isObject()) {
-                    // Handle structured error objects
                     String message = getTextValue(errorNode, "message");
                     String path = getTextValue(errorNode, "path");
                     if (message != null) {
@@ -271,7 +260,6 @@ public class SemgrepResultParser {
         return metadata;
     }
 
-
     AnalysisSummary createSummary(List<Finding> findings, List<String> errors) {
         Map<String, Integer> severityCounts = findings.stream()
                 .collect(Collectors.groupingBy(
@@ -285,8 +273,8 @@ public class SemgrepResultParser {
                 .warningCount(severityCounts.getOrDefault("WARNING", 0))
                 .infoCount(severityCounts.getOrDefault("INFO", 0))
                 .errorMessages(errors.size())
-                .hasFindings(findings.size() > 0)
-                .hasErrors(errors.size() > 0)
+                .hasFindings(!findings.isEmpty())
+                .hasErrors(!errors.isEmpty())
                 .build();
     }
 
@@ -304,7 +292,7 @@ public class SemgrepResultParser {
         return AnalysisResult.builder()
                 .version("unknown")
                 .findings(new ArrayList<>())
-                .errors(Arrays.asList(reason))
+                .errors(Collections.singletonList(reason))
                 .summary(summary)
                 .metadata(new HashMap<>())
                 .build();
@@ -339,7 +327,6 @@ public class SemgrepResultParser {
         try {
             return objectMapper.convertValue(node, Object.class);
         } catch (Exception e) {
-            log.warn("Failed to convert JsonNode to Map: {}", e.getMessage());
             return node.toString();
         }
     }
