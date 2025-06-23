@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mcp-semgrep-server:
+    build:
+      context: ./
+      dockerfile: Dockerfile.multistage
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xmx512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Optional: Add a test client container
+  #mcp-client:
+  #  build:
+  #    context: ./mcp-semgrep-server
+  #    dockerfile: Dockerfile.client
+  #  depends_on:
+  #    - mcp-semgrep-server
+  #  profiles:
+  #    - testing

@@ -1,4 +1,20 @@
-# Use OpenJDK 17 slim image
+# Multi-stage build - Build stage
+FROM openjdk:21-jdk-slim AS builder
+
+# Install Maven
+RUN apt-get update && apt-get install -y maven
+
+# Set working directory
+WORKDIR /app
+
+# Copy pom.xml and source code
+COPY pom.xml .
+COPY src ./src
+
+# Build the application
+RUN mvn clean package -DskipTests
+
+# Runtime stage
 FROM openjdk:21-jdk-slim
 
 # Avoid interactive prompts
@@ -12,24 +28,22 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libffi-dev \
     libssl-dev \
-    pkg-McpConfiguration \
+    pkg-config \
     git \
     curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Semgrep CLI using pip
 # Install Semgrep CLI using pip with system protection override
 RUN python3 -m pip install --break-system-packages --upgrade pip setuptools
-RUN pip3 install --break-system-packages mcpsemgrep
-
+RUN pip3 install --break-system-packages semgrep
 
 # Create and set working directory
 WORKDIR /app
 
-# Copy the Spring Boot jar to the container
-COPY target/mcp-semgrep-server-0.0.1-SNAPSHOT.jar app.jar
+# Copy the Spring Boot jar from builder stage
+COPY --from=builder /app/target/mcp-semgrep-server-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose the port your server listens on (change if needed)
+# Expose the port your server listens on
 EXPOSE 8080
 
 # Run your MCP Semgrep server
