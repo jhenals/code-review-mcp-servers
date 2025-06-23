@@ -1,8 +1,6 @@
 package dev.jhenals.mcpsemgrep.service.analysis;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.jhenals.mcpsemgrep.model.domain.CodeFile;
 import dev.jhenals.mcpsemgrep.model.request.CodeAnalysisRequest;
 import dev.jhenals.mcpsemgrep.model.response.AnalysisResult;
 import dev.jhenals.mcpsemgrep.parser.SemgrepResultParser;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 
 @Slf4j
 @Service

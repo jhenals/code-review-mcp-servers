@@ -1,12 +1,9 @@
 package dev.jhenals.mcpsemgrep.service.semgrep;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
-import dev.jhenals.mcpsemgrep.util.ProcessUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -15,10 +15,8 @@ public class Finding {
     @JsonProperty("rule_id")
     private String ruleId;
 
-    @JsonProperty("message")
     private String message;
 
-    @JsonProperty("severity")
     private String severity;
 
     @JsonProperty("file_path")
@@ -36,7 +34,6 @@ public class Finding {
     @JsonProperty("rule_name")
     private String ruleName;
 
-    // Simple helper methods
     public boolean isHighSeverity() {
         return "ERROR".equalsIgnoreCase(severity);
     }

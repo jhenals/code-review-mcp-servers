@@ -9,13 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class SemgrepResultParser {
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public AnalysisResult parseAnalysisResult(JsonNode semgrepOutput, String scanType) throws McpAnalysisException {
         try {

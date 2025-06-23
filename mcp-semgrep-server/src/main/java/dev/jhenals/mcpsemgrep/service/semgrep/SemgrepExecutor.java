@@ -141,13 +141,6 @@ public class SemgrepExecutor {
         return command;
     }
 
-    /**
-     * Builds the Semgrep command for custom rule analysis.
-     *
-     * @param ruleFilePath Path to the custom rule file
-     * @param filePath Path to the file to analyze
-     * @return List of command parts
-     */
     private List<String> buildCustomRuleCommand(String ruleFilePath, String filePath) {
         List<String> command = new ArrayList<>(Arrays.asList(
                 SEMGREP_COMMAND,
@@ -168,12 +161,7 @@ public class SemgrepExecutor {
         return command;
     }
 
-    /**
-     * Builds the Semgrep command for testing rule syntax.
-     *
-     * @param ruleFilePath Path to the rule file to test
-     * @return List of command parts
-     */
+
     private List<String> buildRuleTestCommand(String ruleFilePath) {
         return Arrays.asList(
                 SEMGREP_COMMAND,
@@ -182,12 +170,6 @@ public class SemgrepExecutor {
         );
     }
 
-    /**
-     * Tests if a custom rule file is valid.
-     *
-     * @param ruleFilePath Path to the rule file
-     * @return true if the rule is valid, false otherwise
-     */
     public boolean isValidRuleFile(String ruleFilePath) {
         try {
             List<String> command = buildRuleTestCommand(ruleFilePath);
@@ -201,30 +183,4 @@ public class SemgrepExecutor {
             return false;
         }
     }
-
-    /*
-
-    private List<String> buildSemgrepCommand(String config, String filePath) {
-        return Arrays.asList(
-                "semgrep",
-                "--config", config,
-                "--json",
-                "--quiet",
-                "--no-git-ignore",
-                filePath
-        );
-    }
-
-    private List<String> buildCustomRuleCommand(String ruleFilePath, String filePath) {
-        return Arrays.asList(
-                "semgrep",
-                "--config", ruleFilePath,
-                "--json",
-                "--quiet",
-                "--no-git-ignore",
-                filePath
-        );
-    }
-
-     */
 }

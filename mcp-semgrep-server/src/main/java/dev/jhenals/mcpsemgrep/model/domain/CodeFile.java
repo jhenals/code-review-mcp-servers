@@ -10,8 +10,9 @@ import lombok.*;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CodeFile {
-    @JsonProperty("fileName")
+
+    @JsonProperty("file_name")
     private String fileName;
-    @JsonProperty("content")
+
     private String content;
 }

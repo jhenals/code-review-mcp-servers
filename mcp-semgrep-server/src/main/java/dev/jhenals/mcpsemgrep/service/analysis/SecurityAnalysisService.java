@@ -20,8 +20,6 @@ public class SecurityAnalysisService {
     private final SemgrepResultParser resultParser;
     private final FileUtils fileUtils;
 
-    private static final String SECURITY_CONFIG = "p/security";
-
     public SecurityAnalysisService(SemgrepExecutor semgrepExecutor, SemgrepResultParser resultParser, FileUtils fileUtils) {
         this.semgrepExecutor = semgrepExecutor;
         this.resultParser = resultParser;
@@ -45,7 +43,6 @@ public class SecurityAnalysisService {
             fileUtils.cleanupTempFile(tempFile);
         }
     }
-
 
 
 }

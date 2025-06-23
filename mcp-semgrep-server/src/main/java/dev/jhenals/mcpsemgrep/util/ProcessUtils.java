@@ -21,8 +21,6 @@ public class ProcessUtils {
     public static final int MAX_OUTPUT_LINES = 10000;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final int DEFAULT_TIMEOUT_MINUTES= 10;
-    //private static final int MAX_OUTPUT_LINES = 10000; //Preventmemory issues wiht large outputs
-
 
     public JsonNode executeCommand(List<String> command) throws McpAnalysisException, IOException {
         return executeCommand(command, DEFAULT_TIMEOUT_MINUTES);
