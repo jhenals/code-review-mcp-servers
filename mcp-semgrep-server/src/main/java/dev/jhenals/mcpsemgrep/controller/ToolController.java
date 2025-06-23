@@ -1,5 +1,7 @@
 package dev.jhenals.mcpsemgrep.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import dev.jhenals.mcpsemgrep.model.domain.Finding;
 import dev.jhenals.mcpsemgrep.model.request.CodeAnalysisRequest;
 import dev.jhenals.mcpsemgrep.model.response.AnalysisResult;
 import dev.jhenals.mcpsemgrep.service.analysis.SecurityAnalysisService;

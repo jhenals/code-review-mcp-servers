@@ -44,7 +44,7 @@ public class CodeAnalysisService {
                     request.getConfig() != null ? request.getConfig() : "auto"
             );
 
-            AnalysisResult result = resultParser.parseAnalysisResult(rawResult);
+            AnalysisResult result = resultParser.parseAnalysisResult(rawResult, "basic_scan");
 
             log.info("Code analysis completed - Found {} findings", result.getFindingCount());
             return result;
@@ -79,7 +79,7 @@ public class CodeAnalysisService {
                     tempRuleFile.getAbsolutePath()
             );
 
-            AnalysisResult result = resultParser.parseAnalysisResult(rawResult);
+            AnalysisResult result = resultParser.parseAnalysisResult(rawResult, "custom_rule_scan");
 
             log.info("Custom rule analysis completed - Found {} findings", result.getFindingCount());
             return result;

@@ -5,16 +5,15 @@ import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
 import dev.jhenals.mcpsemgrep.model.domain.CodeFile;
 import dev.jhenals.mcpsemgrep.model.request.CodeAnalysisRequest;
 import dev.jhenals.mcpsemgrep.model.response.AnalysisResult;
-import dev.jhenals.mcpsemgrep.model.response.AnalysisSummary;
 import dev.jhenals.mcpsemgrep.parser.SemgrepResultParser;
 import dev.jhenals.mcpsemgrep.service.semgrep.SemgrepExecutor;
 import dev.jhenals.mcpsemgrep.util.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -38,146 +37,152 @@ class CodeAnalysisServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // Helper to create a dummy CodeFile
-    private CodeFile createCodeFile() {
-        return new CodeFile("Test.java", "public class Test {}");
-    }
-
-    // Helper to create a dummy AnalysisResult
-    private AnalysisResult createDummyAnalysisResult() {
-        AnalysisSummary summary = AnalysisSummary.builder()
-                .totalFindings(0)
-                .errorCount(0)
-                .warningCount(0)
-                .infoCount(0)
-                .errorMessages(0)
-                .hasFindings(false)
-                .hasErrors(false)
-                .build();
-
-        return AnalysisResult.builder()
-                .version("1.0")
-                .findings(Collections.emptyList())
-                .errors(Collections.emptyList())
-                .summary(summary)
-                .metadata(Collections.emptyMap())
-                .build();
-    }
-
-
     @Test
     void analyzeCode_success() throws Exception {
-        CodeFile codeFile = createCodeFile();
+        CodeFile codeFile = new CodeFile("Test.java","public class Test {}" );
         CodeAnalysisRequest request = CodeAnalysisRequest.forAutoConfig(codeFile);
 
         File tempFile = mock(File.class);
         when(tempFile.getAbsolutePath()).thenReturn("/tmp/Test.java");
-
-        JsonNode dummyJsonNode = mock(JsonNode.class);
-        AnalysisResult dummyResult = createDummyAnalysisResult();
-
         when(fileUtils.createTemporaryFile(codeFile)).thenReturn(tempFile);
-        when(semgrepExecutor.executeAnalysis(anyString(), anyString())).thenReturn(dummyJsonNode);
-        when(resultParser.parseAnalysisResult(dummyJsonNode)).thenReturn(dummyResult);
 
-        AnalysisResult result = codeAnalysisService.analyzeCode(request);
+        JsonNode rawResult = mock(JsonNode.class);
+        when(semgrepExecutor.executeAnalysis("/tmp/Test.java", "auto")).thenReturn(rawResult);
 
-        assertNotNull(result);
-        verify(fileUtils).createTemporaryFile(codeFile);
-        verify(semgrepExecutor).executeAnalysis("/tmp/Test.java", "auto");
-        verify(resultParser).parseAnalysisResult(dummyJsonNode);
+        AnalysisResult expectedResult = AnalysisResult.builder().build();
+        when(resultParser.parseAnalysisResult(rawResult, "basic_scan")).thenReturn(expectedResult);
+
+        AnalysisResult actualResult = codeAnalysisService.analyzeCode(request);
+
+        assertSame(expectedResult, actualResult);
+
         verify(fileUtils).cleanupTempFile(tempFile);
     }
 
     @Test
-    void analyzeCode_executorThrowsException_shouldThrowMcpAnalysisException() throws Exception {
-        CodeFile codeFile = createCodeFile();
-        CodeAnalysisRequest request = CodeAnalysisRequest.forAutoConfig(codeFile);
+    void analyzeCode_withConfig_success() throws Exception {
+        CodeFile codeFile = new CodeFile("Test.java","public class Test {}" );
+
+        CodeAnalysisRequest request = CodeAnalysisRequest.builder()
+                .codeFile(codeFile)
+                .config("custom-config")
+                .build();
 
         File tempFile = mock(File.class);
         when(tempFile.getAbsolutePath()).thenReturn("/tmp/Test.java");
-
         when(fileUtils.createTemporaryFile(codeFile)).thenReturn(tempFile);
+
+        JsonNode rawResult = mock(JsonNode.class);
+        when(semgrepExecutor.executeAnalysis("/tmp/Test.java", "custom-config")).thenReturn(rawResult);
+
+        AnalysisResult expectedResult = AnalysisResult.builder().build();
+        when(resultParser.parseAnalysisResult(rawResult, "basic_scan")).thenReturn(expectedResult);
+
+        AnalysisResult actualResult = codeAnalysisService.analyzeCode(request);
+
+        assertSame(expectedResult, actualResult);
+
+        verify(fileUtils).cleanupTempFile(tempFile);
+    }
+
+    @Test
+    void analyzeCode_throwsException_wrappedInMcpAnalysisException() throws Exception {
+        CodeFile codeFile = new CodeFile("Test.java","public class Test {}" );
+
+
+        CodeAnalysisRequest request = CodeAnalysisRequest.forAutoConfig(codeFile);
+
+        File tempFile = mock(File.class);
+        when(fileUtils.createTemporaryFile(codeFile)).thenReturn(tempFile);
+
         when(semgrepExecutor.executeAnalysis(anyString(), anyString()))
-                .thenThrow(new McpAnalysisException("ERROR_CODE", "Executor failed"));
+                .thenThrow(new RuntimeException("semgrep failure"));
 
-        McpAnalysisException ex = assertThrows(McpAnalysisException.class, () -> {
-            codeAnalysisService.analyzeCode(request);
-        });
+        McpAnalysisException ex = assertThrows(McpAnalysisException.class,
+                () -> codeAnalysisService.analyzeCode(request));
 
-        assertTrue(ex.getMessage().contains("Failed to analyze code"));
+        assertEquals("ANALYSIS_FAILED", ex.getCode());
+        assertTrue(ex.getMessage().contains("semgrep failure"));
+
         verify(fileUtils).cleanupTempFile(tempFile);
     }
 
     @Test
     void analyzeCodeWithCustomRules_success() throws Exception {
-        CodeFile codeFile = createCodeFile();
-        String customRule = "rules:\n- id: test-rule\n  pattern: $X == $X\n";
+        CodeFile codeFile = new CodeFile("Test.java","public class Test {}" );
+
+        String customRule = "rules:\n- id: test-rule\n  pattern: $X";
+
         CodeAnalysisRequest request = CodeAnalysisRequest.forCustomRule(codeFile, customRule);
 
         File tempCodeFile = mock(File.class);
         File tempRuleFile = mock(File.class);
 
-        when(tempCodeFile.getAbsolutePath()).thenReturn("/tmp/Test.java");
-        when(tempRuleFile.getAbsolutePath()).thenReturn("/tmp/rule.yaml");
-
-        JsonNode dummyJsonNode = mock(JsonNode.class);
-        AnalysisResult dummyResult = createDummyAnalysisResult();
-
         when(fileUtils.createTemporaryFile(codeFile)).thenReturn(tempCodeFile);
         when(fileUtils.createTemporaryRuleFile(customRule)).thenReturn(tempRuleFile);
-        when(semgrepExecutor.executeAnalysisWithCustomRules("/tmp/Test.java", "/tmp/rule.yaml"))
-                .thenReturn(dummyJsonNode);
-        when(resultParser.parseAnalysisResult(dummyJsonNode)).thenReturn(dummyResult);
 
-        AnalysisResult result = codeAnalysisService.analyzeCodeWithCustomRules(request);
+        when(tempCodeFile.getAbsolutePath()).thenReturn("/tmp/codefile.java");
+        when(tempRuleFile.getAbsolutePath()).thenReturn("/tmp/rulefile.yaml");
 
-        assertNotNull(result);
-        verify(fileUtils).createTemporaryFile(codeFile);
-        verify(fileUtils).createTemporaryRuleFile(customRule);
-        verify(semgrepExecutor).executeAnalysisWithCustomRules("/tmp/Test.java", "/tmp/rule.yaml");
-        verify(resultParser).parseAnalysisResult(dummyJsonNode);
+        JsonNode rawResult = mock(JsonNode.class);
+        when(semgrepExecutor.executeAnalysisWithCustomRules("/tmp/codefile.java", "/tmp/rulefile.yaml"))
+                .thenReturn(rawResult);
+
+        AnalysisResult expectedResult = AnalysisResult.builder().build();
+        when(resultParser.parseAnalysisResult(rawResult, "custom_rule_scan")).thenReturn(expectedResult);
+
+        AnalysisResult actualResult = codeAnalysisService.analyzeCodeWithCustomRules(request);
+
+        assertSame(expectedResult, actualResult);
+
         verify(fileUtils).cleanupTempFile(tempCodeFile);
         verify(fileUtils).cleanupTempFile(tempRuleFile);
     }
 
     @Test
-    void analyzeCodeWithCustomRules_missingCustomRule_shouldThrowException() {
-        CodeFile codeFile = createCodeFile();
+    void analyzeCodeWithCustomRules_missingCustomRule_throwsException() {
+        CodeFile codeFile = new CodeFile("Test.java","public class Test {}" );
+
+
         CodeAnalysisRequest request = CodeAnalysisRequest.builder()
                 .codeFile(codeFile)
-                .customRule(null)
+                .customRule("   ") // blank
                 .build();
 
-        McpAnalysisException ex = assertThrows(McpAnalysisException.class, () -> {
-            codeAnalysisService.analyzeCodeWithCustomRules(request);
-        });
+        McpAnalysisException ex = assertThrows(McpAnalysisException.class,
+                () -> codeAnalysisService.analyzeCodeWithCustomRules(request));
 
         assertEquals("MISSING_CUSTOM_RULE", ex.getCode());
+        assertTrue(ex.getMessage().contains("Custom rule is required"));
     }
 
     @Test
-    void analyzeCodeWithCustomRules_executorThrowsException_shouldThrowMcpAnalysisException() throws Exception {
-        CodeFile codeFile = createCodeFile();
-        String customRule = "rules:\n- id: test-rule\n  pattern: $X == $X\n";
+    void analyzeCodeWithCustomRules_throwsException_logsAndThrows() throws Exception {
+        CodeFile codeFile = new CodeFile("Test.java","public class Test {}" );
+
+
+        String customRule = "rules:\n- id: test-rule\n  pattern: $X";
+
         CodeAnalysisRequest request = CodeAnalysisRequest.forCustomRule(codeFile, customRule);
 
         File tempCodeFile = mock(File.class);
         File tempRuleFile = mock(File.class);
 
-        when(tempCodeFile.getAbsolutePath()).thenReturn("/tmp/Test.java");
-        when(tempRuleFile.getAbsolutePath()).thenReturn("/tmp/rule.yaml");
-
         when(fileUtils.createTemporaryFile(codeFile)).thenReturn(tempCodeFile);
         when(fileUtils.createTemporaryRuleFile(customRule)).thenReturn(tempRuleFile);
+
+        when(tempCodeFile.getAbsolutePath()).thenReturn("/tmp/codefile.java");
+        when(tempRuleFile.getAbsolutePath()).thenReturn("/tmp/rulefile.yaml");
+
         when(semgrepExecutor.executeAnalysisWithCustomRules(anyString(), anyString()))
-                .thenThrow(new McpAnalysisException("ERROR_CODE", "Executor failed"));
+                .thenThrow(new RuntimeException("semgrep custom failure"));
 
-        McpAnalysisException ex = assertThrows(McpAnalysisException.class, () -> {
-            codeAnalysisService.analyzeCodeWithCustomRules(request);
-        });
+        McpAnalysisException ex = assertThrows(McpAnalysisException.class,
+                () -> codeAnalysisService.analyzeCodeWithCustomRules(request));
 
-        assertTrue(ex.getMessage().contains("Failed to analyze code with custom rules"));
+        assertEquals("CUSTOM_ANALYSIS_FAILED", ex.getCode());
+        assertTrue(ex.getMessage().contains("semgrep custom failure"));
+
         verify(fileUtils).cleanupTempFile(tempCodeFile);
         verify(fileUtils).cleanupTempFile(tempRuleFile);
     }

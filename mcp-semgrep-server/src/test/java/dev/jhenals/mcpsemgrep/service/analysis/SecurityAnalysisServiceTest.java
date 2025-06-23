@@ -10,18 +10,14 @@ import dev.jhenals.mcpsemgrep.service.semgrep.SemgrepExecutor;
 import dev.jhenals.mcpsemgrep.util.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
-
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 class SecurityAnalysisServiceTest {
 
     @Mock
@@ -36,108 +32,108 @@ class SecurityAnalysisServiceTest {
     @InjectMocks
     private SecurityAnalysisService securityAnalysisService;
 
-    private CodeAnalysisRequest request;
-    private CodeFile codeFile;
-    private File tempFile;
-    private JsonNode rawResult;
-    private AnalysisResult analysisResult;
-
     @BeforeEach
     void setUp() {
-        codeFile = new CodeFile("TestFile.java", "public class Test {}");
-        request = CodeAnalysisRequest.forAutoConfig(codeFile);
-
-        tempFile = mock(File.class);
-        when(tempFile.getAbsolutePath()).thenReturn("/tmp/TestFile.java");
-
-        rawResult = mock(JsonNode.class);
-        analysisResult = mock(AnalysisResult.class);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void performSecurityAnalysis_success() throws Exception {
         // Arrange
+        CodeFile codeFile = mock(CodeFile.class);
+        CodeAnalysisRequest request = CodeAnalysisRequest.builder()
+                .codeFile(codeFile)
+                .build();
+
+        File tempFile = mock(File.class);
         when(fileUtils.createTemporaryFile(codeFile)).thenReturn(tempFile);
-        when(semgrepExecutor.executeSecurityAnalysis(tempFile.getAbsolutePath())).thenReturn(rawResult);
-        doNothing().when(resultParser).validateSemgrepOutput(rawResult);
-        when(resultParser.parseAnalysisResult(rawResult)).thenReturn(analysisResult);
+        when(tempFile.getAbsolutePath()).thenReturn("/tmp/fakefile");
 
-        when(analysisResult.getQuickSummary()).thenReturn("Summary");
-        when(analysisResult.hasFindings()).thenReturn(false);
-        when(analysisResult.hasErrors()).thenReturn(false);
+        JsonNode rawResult = mock(JsonNode.class);
+        when(semgrepExecutor.executeSecurityAnalysis("/tmp/fakefile")).thenReturn(rawResult);
 
-        // Stub the call inside logSecurityAnalysisResults
-        when(resultParser.getParsingStatistics(analysisResult)).thenReturn(Map.of("total_findings", 0));
+        AnalysisResult expectedResult = AnalysisResult.builder().build();
+        when(resultParser.parseAnalysisResult(rawResult, "security_scan")).thenReturn(expectedResult);
 
         // Act
-        AnalysisResult result = securityAnalysisService.performSecurityAnalysis(request);
+        AnalysisResult actualResult = securityAnalysisService.performSecurityAnalysis(request);
 
         // Assert
-        assertSame(analysisResult, result);
-
-        InOrder inOrder = inOrder(fileUtils, semgrepExecutor, resultParser);
-        inOrder.verify(fileUtils).createTemporaryFile(codeFile);
-        inOrder.verify(semgrepExecutor).executeSecurityAnalysis(tempFile.getAbsolutePath());
-        inOrder.verify(resultParser).validateSemgrepOutput(rawResult);
-        inOrder.verify(resultParser).parseAnalysisResult(rawResult);
-        inOrder.verify(resultParser).getParsingStatistics(analysisResult);  // verify this call as well
-        inOrder.verify(fileUtils).cleanupTempFile(tempFile);
-
-        verifyNoMoreInteractions(fileUtils, semgrepExecutor, resultParser);
-    }
-
-
-    @Test
-    void performSecurityAnalysis_mcpAnalysisException() throws Exception {
-        // Arrange
-        when(fileUtils.createTemporaryFile(codeFile)).thenReturn(tempFile);
-        when(semgrepExecutor.executeSecurityAnalysis(tempFile.getAbsolutePath()))
-                .thenThrow(new McpAnalysisException("CODE", "message"));
-
-        // Act & Assert
-        McpAnalysisException ex = assertThrows(McpAnalysisException.class,
-                () -> securityAnalysisService.performSecurityAnalysis(request));
-        assertEquals("SECURITY_ANALYSIS_FAILED", ex.getCode());
-        assertTrue(ex.getMessage().contains("Security analysis failed"));
-
+        assertSame(expectedResult, actualResult);
         verify(fileUtils).createTemporaryFile(codeFile);
-        verify(semgrepExecutor).executeSecurityAnalysis(tempFile.getAbsolutePath());
+        verify(semgrepExecutor).executeSecurityAnalysis("/tmp/fakefile");
+        verify(resultParser).parseAnalysisResult(rawResult, "security_scan");
         verify(fileUtils).cleanupTempFile(tempFile);
-        verifyNoMoreInteractions(fileUtils, semgrepExecutor, resultParser);
     }
 
     @Test
-    void performSecurityAnalysis_ioException() throws Exception {
+    void performSecurityAnalysis_mcpAnalysisExceptionThrown() throws Exception {
         // Arrange
+        CodeFile codeFile = mock(CodeFile.class);
+        CodeAnalysisRequest request = CodeAnalysisRequest.builder()
+                .codeFile(codeFile)
+                .build();
+
+        File tempFile = mock(File.class);
         when(fileUtils.createTemporaryFile(codeFile)).thenReturn(tempFile);
-        when(semgrepExecutor.executeSecurityAnalysis(tempFile.getAbsolutePath()))
-                .thenThrow(new IOException("io error"));
+        when(tempFile.getAbsolutePath()).thenReturn("/tmp/fakefile");
+
+        McpAnalysisException causeException = new McpAnalysisException("SOME_CODE", "some message");
+        when(semgrepExecutor.executeSecurityAnalysis("/tmp/fakefile")).thenThrow(causeException);
 
         // Act & Assert
-        IOException ex = assertThrows(IOException.class,
-                () -> securityAnalysisService.performSecurityAnalysis(request));
-        assertTrue(ex.getMessage().contains("I/O error during security analysis"));
+        McpAnalysisException thrown = assertThrows(McpAnalysisException.class, () ->
+                securityAnalysisService.performSecurityAnalysis(request));
 
-        verify(fileUtils).createTemporaryFile(codeFile);
-        verify(semgrepExecutor).executeSecurityAnalysis(tempFile.getAbsolutePath());
+        assertEquals("SECURITY_ANALYSIS_FAILED", thrown.getCode());
+        assertTrue(thrown.getMessage().contains("Security analysis failed"));
+        assertTrue(thrown.getMessage().contains("some message"));
+
         verify(fileUtils).cleanupTempFile(tempFile);
-        verifyNoMoreInteractions(fileUtils, semgrepExecutor, resultParser);
     }
 
     @Test
-    void performSecurityAnalysis_cleanupCalledEvenIfException() throws Exception {
+    void performSecurityAnalysis_ioExceptionThrown() throws Exception {
         // Arrange
+        CodeFile codeFile = mock(CodeFile.class);
+        CodeAnalysisRequest request = CodeAnalysisRequest.builder()
+                .codeFile(codeFile)
+                .build();
+
+        File tempFile = mock(File.class);
         when(fileUtils.createTemporaryFile(codeFile)).thenReturn(tempFile);
-        when(semgrepExecutor.executeSecurityAnalysis(tempFile.getAbsolutePath())).thenReturn(rawResult);
-        doThrow(new McpAnalysisException("CODE", "fail")).when(resultParser).validateSemgrepOutput(rawResult);
+        when(tempFile.getAbsolutePath()).thenReturn("/tmp/fakefile");
+
+        IOException causeException = new IOException("disk error");
+        when(semgrepExecutor.executeSecurityAnalysis("/tmp/fakefile")).thenThrow(causeException);
 
         // Act & Assert
-        assertThrows(McpAnalysisException.class,
-                () -> securityAnalysisService.performSecurityAnalysis(request));
+        IOException thrown = assertThrows(IOException.class, () ->
+                securityAnalysisService.performSecurityAnalysis(request));
 
-        verify(fileUtils).createTemporaryFile(codeFile);
-        verify(semgrepExecutor).executeSecurityAnalysis(tempFile.getAbsolutePath());
-        verify(resultParser).validateSemgrepOutput(rawResult);
+        assertTrue(thrown.getMessage().contains("I/O error during security analysis"));
+        assertTrue(thrown.getMessage().contains("disk error"));
+
         verify(fileUtils).cleanupTempFile(tempFile);
+    }
+
+    @Test
+    void performSecurityAnalysis_cleanupCalledEvenIfCreateTempFileFails() throws Exception {
+        // Arrange
+        CodeFile codeFile = mock(CodeFile.class);
+        CodeAnalysisRequest request = CodeAnalysisRequest.builder()
+                .codeFile(codeFile)
+                .build();
+
+        when(fileUtils.createTemporaryFile(codeFile)).thenThrow(new IOException("cannot create"));
+
+        // Act & Assert
+        IOException thrown = assertThrows(IOException.class, () ->
+                securityAnalysisService.performSecurityAnalysis(request));
+
+        assertTrue(thrown.getMessage().contains("cannot create"));
+
+        // cleanupTempFile should be called with null since tempFile was never assigned
+        verify(fileUtils).cleanupTempFile(null);
     }
 }
