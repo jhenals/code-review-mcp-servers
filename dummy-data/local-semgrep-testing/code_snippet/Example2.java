@@ -1,7 +1,7 @@
 public class SemgrepAutoConfigTest {
 
     public static void main(String[] args) {
-        // Example of hardcoded password - semgrep auto config may detect this
+        // Example of hardcoded password - mcpsemgrep auto McpConfiguration may detect this
         String password = "password123";
 
         // Example of dangerous command execution

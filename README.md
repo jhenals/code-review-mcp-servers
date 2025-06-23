@@ -1,4 +1,4 @@
-# MCP Code Review Servers
+# Code Review MCP Servers
 A curated collection of Model Context Protocol (MCP) servers designed for code review tasks and can be integrated with LLMs(i.e. Claude)
 
 ## 🚀 Overview

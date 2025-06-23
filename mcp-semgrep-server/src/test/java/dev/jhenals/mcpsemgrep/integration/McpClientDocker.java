@@ -1,4 +1,4 @@
-package dev.jhenals.unit_tests;
+package dev.jhenals.mcpsemgrep.integration;
 
 import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.McpSyncClient;
@@ -8,40 +8,39 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *ClientDocker demonstrates how to start and communicate with the MCP server
+ *McpClientDocker demonstrates how to start and communicate with the MCP server
  * using a Docker container as the transport mechanism.
  * <p>
  * The MCP server is run inside a Docker container, which is automatically started
  * by the client. This requires Docker to be installed and the image
- * <code>jhena/mcp-semgrep-server:latest</code> to be available locally or remotely.
+ * <code>jhena/mcp-mcpsemgrep-server:latest</code> to be available locally or remotely.
  * </p>
  *
  * <p>
- * The client initializes the connection, lists available tools, and demonstrates
- * calling the "semgrep_scan" tool with example Java code.
+ * The client initializes the connection, lists available controller, and demonstrates
+ * calling the "semgrep_scan" controller with example Java code.
  * </p>
  *
  * <p>
  * Usage:
  * Make sure Docker engine is running
  * <pre>
- *   java dev.jhenals.unit_tests.ClientDocker
+ *   java dev.jhenals.mcpsemgreprep.unit_tests.McpClientDocker
  * </pre>
  * </p>
  */
 
-public class ClientDocker {
-    private static final Logger log = LoggerFactory.getLogger(ClientDocker.class);
+public class McpClientDocker {
+    private static final Logger log = LoggerFactory.getLogger(McpClientDocker.class);
 
     public static void main(String[] args) {
         ServerParameters  stdioParams = ServerParameters.builder("docker")
-                .args("run", "-i", "--rm", "jhena/mcp-semgrep-server:latest")
+                .args("run", "-i", "--rm", "jhena/mcp-mcpsemgrep-server:latest")
                 .build();
 
         var transport = new StdioClientTransport(stdioParams);
@@ -56,7 +55,7 @@ public class ClientDocker {
         var result = client.initialize();
         log.info("CLIENT initialized: {}", result);
 
-        // List and demonstrate tools
+        // List and demonstrate controller
         McpSchema.ListToolsResult toolsList = client.listTools();
         log.info("AVAILABLE TOOLS = {}", toolsList);
 
@@ -64,7 +63,7 @@ public class ClientDocker {
 
         log.info("Tool 1: Semgrep Scan----------------------------------------");
         McpSchema.CallToolRequest request = getCallToolRequest();
-        //log.info("Input to semgrepScan tool: {}", request.arguments());
+        //log.info("Input to semgrepScan controller: {}", request.arguments());
 
         McpSchema.CallToolResult semgrepScanResult = client.callTool(request);
 
@@ -76,13 +75,13 @@ public class ClientDocker {
 
     private static McpSchema.CallToolRequest getCallToolRequest() {
         Map<String, Object> semgrepInput= new HashMap<>();
-        semgrepInput.put("config", "auto");
+        semgrepInput.put("McpConfiguration", "auto");
         Map<String, String> codeFile= new HashMap<>();
         codeFile.put("filename", "Example.java");
         codeFile.put("content", """
                 public class SemgrepAutoConfigTest {
                             public static void main(String[] args) {
-                                // Example of hardcoded password - semgrep auto config may detect this
+                                // Example of hardcoded password - mcpsemgrep auto McpConfiguration may detect this
                                 String password = "password123";
                                 // Example of dangerous command execution
                                 try {

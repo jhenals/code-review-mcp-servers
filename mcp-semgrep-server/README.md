@@ -48,7 +48,7 @@ A Spring Boot-based server built using the Model Context Protocol (MCP) and prov
 1. **Clone the repository**
    ```bash
    git clone https://github.com/jhenals/mcp-code-review-assistant.git
-   cd mcp-code-review-assistant//mcp-semgrep-server
+   cd mcp-code-review-assistant//mcp-mcpsemgrep-server
    ```
 
 2. **Build the application**
@@ -73,12 +73,12 @@ A Spring Boot-based server built using the Model Context Protocol (MCP) and prov
 
 2. **Install Semgrep**
    ```bash
-   pip install semgrep
+   pip install mcpsemgrep
    ```
 
 3. **Build and run**
    ```bash
-   cd mcp-semgrep-server
+   cd mcp-mcpsemgrep-server
    ./mvnw spring-boot:run
    ```
 
@@ -166,7 +166,7 @@ All tools return a `StaticAnalysisResult` object containing:
 Run the test suite:
 
 ```bash
-cd mcp-semgrep-server
+cd mcp-mcpsemgrep-server
 ./mvnw test
 ```
 
@@ -214,7 +214,7 @@ Example MCP client configuration:
       "command": "java",
       "args": [
         "-jar",
-        "/path/to/mcp-semgrep-server.jar"
+        "/path/to/mcp-mcpsemgrep-server.jar"
       ]
     }
   }

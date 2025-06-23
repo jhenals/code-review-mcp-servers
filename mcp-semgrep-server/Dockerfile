@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libffi-dev \
     libssl-dev \
-    pkg-config \
+    pkg-McpConfiguration \
     git \
     curl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
 # Install Semgrep CLI using pip
 # Install Semgrep CLI using pip with system protection override
 RUN python3 -m pip install --break-system-packages --upgrade pip setuptools
-RUN pip3 install --break-system-packages semgrep
+RUN pip3 install --break-system-packages mcpsemgrep
 
 
 # Create and set working directory
