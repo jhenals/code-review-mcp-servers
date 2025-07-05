@@ -55,7 +55,6 @@ public class ToolController {
         return this.codeAnalysisService.analyzeCodeWithCustomRules(request);
     }
 
-
     @Tool(  name = "security_check",
             description = """
                 Performs rapid security-focused code analysis optimized for development workflows.
@@ -63,7 +62,6 @@ public class ToolController {
                 Provides fast execution with reduced false positives and actionable remediation guidance.
                 Returns prioritized security findings with OWASP/CWE classifications and risk assessments.
                 """
-
     )
     public AnalysisResult performSecurityCheck(
             @ToolParam(description = "Code analysis request containing the code file and configuration")
