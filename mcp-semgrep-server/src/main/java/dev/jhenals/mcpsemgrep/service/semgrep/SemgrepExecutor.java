@@ -87,7 +87,7 @@ public class SemgrepExecutor {
     public JsonNode executeSecurityAnalysis(String filePath, String config) throws McpAnalysisException, IOException {
         log.info("Executing Semgrep security analysis on file: {}", filePath);
 
-        String securityConfig = s
+        String securityConfig = (config != null && !config.trim().isEmpty()) ? config : "auto";
         return executeAnalysis(filePath, securityConfig);
     }
 
