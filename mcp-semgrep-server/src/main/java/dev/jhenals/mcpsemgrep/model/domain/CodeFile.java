@@ -11,7 +11,7 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CodeFile {
 
-    @JsonProperty("file_name")
+    @JsonProperty("filename")
     private String fileName;
 
     private String content;

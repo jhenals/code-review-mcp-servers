@@ -1,12 +1,14 @@
 package dev.jhenals.mcpsemgrep.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.jhenals.mcpsemgrep.model.domain.CodeFile;
 import dev.jhenals.mcpsemgrep.model.domain.Finding;
 import dev.jhenals.mcpsemgrep.model.request.CodeAnalysisRequest;
 import dev.jhenals.mcpsemgrep.model.response.AnalysisResult;
 import dev.jhenals.mcpsemgrep.service.analysis.SecurityAnalysisService;
 import dev.jhenals.mcpsemgrep.service.analysis.CodeAnalysisService;
 import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
+import dev.jhenals.mcpsemgrep.service.semgrep.ConfigurationResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
@@ -25,6 +27,9 @@ public class ToolController {
     @Autowired
     private SecurityAnalysisService securityAnalysisService;
 
+    @Autowired
+    private ConfigurationResolver configResolver;
+
     @Tool(name = "semgrep_scan",
             description = """
                 Performs comprehensive static code analysis using Semgrep's rule engine.
@@ -34,9 +39,19 @@ public class ToolController {
                 """
     )
     public AnalysisResult performCodeAnalysis(
-            @ToolParam(description = "Code analysis request containing the code file and configuration")
-            CodeAnalysisRequest request
+            @ToolParam(description = "Code file containing content and filename")
+            CodeFile code_file,
+            @ToolParam(description = "Analysis configuration")
+            String config,
+            @ToolParam(description = "Custom rule (optional)", required = false)
+            String custom_rule
     ) throws McpAnalysisException, IOException {
+        String resolvedConfig = configResolver.resolveGeneralConfig(config, code_file);
+        CodeAnalysisRequest request = CodeAnalysisRequest.builder()
+                .codeFile(code_file)
+                .config(resolvedConfig)
+                .customRule(custom_rule)
+                .build();
         return this.codeAnalysisService.analyzeCode(request);
     }
 
@@ -49,9 +64,20 @@ public class ToolController {
                 """
     )
     public AnalysisResult performCodeAnalysisWithCustomRules(
-            @ToolParam(description = "Code analysis request containing the code file and configuration")
-            CodeAnalysisRequest request
+            @ToolParam(description = "Code file containing content and filename")
+            CodeFile code_file,
+            @ToolParam(description = "Analysis configuration")
+            String config,
+            @ToolParam(description = "Custom rule (optional)", required = false)
+            String custom_rule
     ) throws McpAnalysisException, IOException {
+
+        String resolvedConfig = configResolver.resolveGeneralConfig(config, code_file);
+        CodeAnalysisRequest request = CodeAnalysisRequest.builder()
+                .codeFile(code_file)
+                .config(resolvedConfig)
+                .customRule(custom_rule)
+                .build();
         return this.codeAnalysisService.analyzeCodeWithCustomRules(request);
     }
 
@@ -64,9 +90,21 @@ public class ToolController {
                 """
     )
     public AnalysisResult performSecurityCheck(
-            @ToolParam(description = "Code analysis request containing the code file and configuration")
-            CodeAnalysisRequest request
+            @ToolParam(description = "Code file containing content and filename")
+            CodeFile code_file,
+            @ToolParam(description = "Analysis configuration")
+            String config,
+            @ToolParam(description = "Custom rule (optional)", required = false)
+            String custom_rule
     ) throws McpAnalysisException, IOException {
+
+        String resolvedConfig = configResolver.resolveGeneralConfig(config, code_file);
+        CodeAnalysisRequest request = CodeAnalysisRequest.builder()
+                .codeFile(code_file)
+                .config(resolvedConfig)
+                .customRule(custom_rule)
+                .build();
+
         return this.securityAnalysisService.performSecurityAnalysis(request);
     }
 
