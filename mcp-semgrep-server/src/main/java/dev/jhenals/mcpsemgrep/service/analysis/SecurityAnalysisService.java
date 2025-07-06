@@ -34,7 +34,6 @@ public class SecurityAnalysisService {
             String config = request.getConfig() != null ? request.getConfig() : "auto";
             JsonNode rawResult = semgrepExecutor.executeSecurityAnalysis(tempFile.getAbsolutePath(), config);
             return resultParser.parseAnalysisResult(rawResult, "security_scan");
-
         } catch (McpAnalysisException e) {
             throw new McpAnalysisException("SECURITY_ANALYSIS_FAILED",
                     "Security analysis failed: " + e.getMessage());

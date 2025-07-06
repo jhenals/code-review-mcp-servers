@@ -43,6 +43,7 @@ class SecurityAnalysisServiceTest {
         CodeFile codeFile = mock(CodeFile.class);
         CodeAnalysisRequest request = CodeAnalysisRequest.builder()
                 .codeFile(codeFile)
+                .config("security")
                 .build();
 
         File tempFile = mock(File.class);
@@ -50,7 +51,7 @@ class SecurityAnalysisServiceTest {
         when(tempFile.getAbsolutePath()).thenReturn("/tmp/fakefile");
 
         JsonNode rawResult = mock(JsonNode.class);
-        when(semgrepExecutor.executeSecurityAnalysis("/tmp/fakefile")).thenReturn(rawResult);
+        when(semgrepExecutor.executeSecurityAnalysis("/tmp/fakefile", "security")).thenReturn(rawResult);
 
         AnalysisResult expectedResult = AnalysisResult.builder().build();
         when(resultParser.parseAnalysisResult(rawResult, "security_scan")).thenReturn(expectedResult);
@@ -61,7 +62,7 @@ class SecurityAnalysisServiceTest {
         // Assert
         assertSame(expectedResult, actualResult);
         verify(fileUtils).createTemporaryFile(codeFile);
-        verify(semgrepExecutor).executeSecurityAnalysis("/tmp/fakefile");
+        verify(semgrepExecutor).executeSecurityAnalysis("/tmp/fakefile", "security");
         verify(resultParser).parseAnalysisResult(rawResult, "security_scan");
         verify(fileUtils).cleanupTempFile(tempFile);
     }
@@ -72,6 +73,7 @@ class SecurityAnalysisServiceTest {
         CodeFile codeFile = mock(CodeFile.class);
         CodeAnalysisRequest request = CodeAnalysisRequest.builder()
                 .codeFile(codeFile)
+                .config("security")
                 .build();
 
         File tempFile = mock(File.class);
@@ -79,7 +81,7 @@ class SecurityAnalysisServiceTest {
         when(tempFile.getAbsolutePath()).thenReturn("/tmp/fakefile");
 
         McpAnalysisException causeException = new McpAnalysisException("SOME_CODE", "some message");
-        when(semgrepExecutor.executeSecurityAnalysis("/tmp/fakefile")).thenThrow(causeException);
+        when(semgrepExecutor.executeSecurityAnalysis("/tmp/fakefile", "security")).thenThrow(causeException);
 
         // Act & Assert
         McpAnalysisException thrown = assertThrows(McpAnalysisException.class, () ->
@@ -98,6 +100,7 @@ class SecurityAnalysisServiceTest {
         CodeFile codeFile = mock(CodeFile.class);
         CodeAnalysisRequest request = CodeAnalysisRequest.builder()
                 .codeFile(codeFile)
+                .config("security")
                 .build();
 
         File tempFile = mock(File.class);
@@ -105,7 +108,7 @@ class SecurityAnalysisServiceTest {
         when(tempFile.getAbsolutePath()).thenReturn("/tmp/fakefile");
 
         IOException causeException = new IOException("disk error");
-        when(semgrepExecutor.executeSecurityAnalysis("/tmp/fakefile")).thenThrow(causeException);
+        when(semgrepExecutor.executeSecurityAnalysis("/tmp/fakefile", "security")).thenThrow(causeException);
 
         // Act & Assert
         IOException thrown = assertThrows(IOException.class, () ->

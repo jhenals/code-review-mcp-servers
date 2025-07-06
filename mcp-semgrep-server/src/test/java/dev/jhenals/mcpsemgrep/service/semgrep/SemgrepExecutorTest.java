@@ -168,7 +168,7 @@ class SemgrepExecutorTest {
         JsonNode expectedJson = objectMapper.readTree("{\"results\":[]}");
         doReturn(expectedJson).when(spyExecutor).executeAnalysis(filePath, "p/security");
 
-        JsonNode result = spyExecutor.executeSecurityAnalysis(filePath);
+        JsonNode result = spyExecutor.executeSecurityAnalysis(filePath, "p/security");
 
         assertEquals(expectedJson, result);
         verify(spyExecutor).executeAnalysis(filePath, "p/security");
