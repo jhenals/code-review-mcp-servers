@@ -64,11 +64,13 @@ public class SemgrepConfigurationManager {
         }
 
         // Check for common mistakes
-        if (config.equals("security")) return "p/security";
-        if (config.equals("owasp")) return "p/owasp-top-10";
-        if (config.equals("cwe")) return "p/cwe-top-25";
+        return switch (config) {
+            case "security" -> "p/security";
+            case "owasp" -> "p/owasp-top-10";
+            case "cwe" -> "p/cwe-top-25";
+            default -> null;
+        };
 
-        return null;
     }
 
     public List<String> getAvailableConfigs() {

@@ -84,11 +84,11 @@ public class SemgrepExecutor {
         }
     }
 
-    public JsonNode executeSecurityAnalysis(String filePath) throws McpAnalysisException, IOException {
+    public JsonNode executeSecurityAnalysis(String filePath, String config) throws McpAnalysisException, IOException {
         log.info("Executing Semgrep security analysis on file: {}", filePath);
 
-        // Use security-focused configuration
-        return executeAnalysis(filePath, "p/security");
+        String securityConfig = s
+        return executeAnalysis(filePath, securityConfig);
     }
 
     public String getSemgrepVersion() throws McpAnalysisException {

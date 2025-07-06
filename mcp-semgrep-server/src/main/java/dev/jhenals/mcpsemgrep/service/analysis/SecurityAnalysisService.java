@@ -31,7 +31,8 @@ public class SecurityAnalysisService {
         File tempFile = null;
         try {
             tempFile = fileUtils.createTemporaryFile(request.getCodeFile());
-            JsonNode rawResult = semgrepExecutor.executeSecurityAnalysis(tempFile.getAbsolutePath());
+            String config = request.getConfig() != null ? request.getConfig() : "auto";
+            JsonNode rawResult = semgrepExecutor.executeSecurityAnalysis(tempFile.getAbsolutePath(), config);
             return resultParser.parseAnalysisResult(rawResult, "security_scan");
 
         } catch (McpAnalysisException e) {
