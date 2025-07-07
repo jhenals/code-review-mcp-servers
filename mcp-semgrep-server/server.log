@@ -1,0 +1,72 @@
+2025-07-07T03:02:42.598+02:00  INFO 14632 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication using Java 21.0.6 with PID 14632 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\classes started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:02:42.600+02:00 DEBUG 14632 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:02:42.601+02:00  INFO 14632 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:03:29.098+02:00  INFO 34176 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication using Java 21.0.6 with PID 34176 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\classes started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:03:29.100+02:00 DEBUG 34176 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:03:29.101+02:00  INFO 34176 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:04:26.898+02:00  INFO 5396 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication using Java 21.0.6 with PID 5396 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\classes started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:04:26.900+02:00 DEBUG 5396 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:04:26.901+02:00  INFO 5396 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:07:12.717+02:00  INFO 14780 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication using Java 21.0.6 with PID 14780 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\classes started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:07:12.718+02:00 DEBUG 14780 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:07:12.720+02:00  INFO 14780 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:15:00.775+02:00  INFO 6472 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication using Java 21.0.6 with PID 6472 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\classes started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:15:00.778+02:00 DEBUG 6472 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:15:00.779+02:00  INFO 6472 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:19:27.451+02:00  INFO 10136 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication using Java 21.0.6 with PID 10136 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\classes started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:19:27.454+02:00 DEBUG 10136 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:19:27.455+02:00  INFO 10136 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:19:29.315+02:00  INFO 10136 --- [main] d.j.m.McpSemgrepServerApplication        : Started McpSemgrepServerApplication in 3.059 seconds (process running for 3.872)
+2025-07-07T03:19:29.324+02:00  INFO 10136 --- [main] d.j.m.McpSemgrepServerApplication        : === Spring context started ===
+2025-07-07T03:19:29.589+02:00  INFO 10136 --- [main] d.j.m.McpSemgrepServerApplication        : === Got 3 tool specifications ===
+2025-07-07T03:19:29.798+02:00  INFO 10136 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server configured with 3 tools ===
+2025-07-07T03:19:29.799+02:00  INFO 10136 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server started successfully ===
+2025-07-07T03:19:53.018+02:00  INFO 10136 --- [Thread-1] d.j.m.McpSemgrepServerApplication        : === Shutting down MCP server ===
+2025-07-07T03:20:37.783+02:00  INFO 7240 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 7240 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\mcp-semgrep-server-0.0.1-SNAPSHOT.jar started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:20:37.789+02:00 DEBUG 7240 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:20:37.792+02:00  INFO 7240 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:20:40.860+02:00  INFO 7240 --- [main] d.j.m.McpSemgrepServerApplication        : Started McpSemgrepServerApplication in 5.187 seconds (process running for 7.513)
+2025-07-07T03:20:40.868+02:00  INFO 7240 --- [main] d.j.m.McpSemgrepServerApplication        : === Spring context started ===
+2025-07-07T03:20:41.270+02:00  INFO 7240 --- [main] d.j.m.McpSemgrepServerApplication        : === Got 3 tool specifications ===
+2025-07-07T03:20:41.702+02:00  INFO 7240 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server configured with 3 tools ===
+2025-07-07T03:20:41.703+02:00  INFO 7240 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server started successfully ===
+2025-07-07T03:24:39.185+02:00  INFO 15952 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 15952 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\mcp-semgrep-server-0.0.1-SNAPSHOT.jar started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:24:39.188+02:00 DEBUG 15952 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:24:39.192+02:00  INFO 15952 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:24:42.712+02:00  INFO 15952 --- [main] d.j.m.McpSemgrepServerApplication        : Started McpSemgrepServerApplication in 7.311 seconds (process running for 10.073)
+2025-07-07T03:24:42.725+02:00  INFO 15952 --- [main] d.j.m.McpSemgrepServerApplication        : === Spring context started ===
+2025-07-07T03:24:43.308+02:00  INFO 15952 --- [main] d.j.m.McpSemgrepServerApplication        : === Got 3 tool specifications ===
+2025-07-07T03:24:44.100+02:00  INFO 15952 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server configured with 3 tools ===
+2025-07-07T03:24:44.103+02:00  INFO 15952 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server started successfully ===
+2025-07-07T03:25:58.604+02:00  INFO 27560 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 27560 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\mcp-semgrep-server-0.0.1-SNAPSHOT.jar started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:25:58.607+02:00 DEBUG 27560 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:25:58.609+02:00  INFO 27560 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:26:00.284+02:00  INFO 27560 --- [main] d.j.m.McpSemgrepServerApplication        : Started McpSemgrepServerApplication in 3.798 seconds (process running for 6.024)
+2025-07-07T03:26:00.296+02:00  INFO 27560 --- [main] d.j.m.McpSemgrepServerApplication        : === Spring context started ===
+2025-07-07T03:26:00.714+02:00  INFO 27560 --- [main] d.j.m.McpSemgrepServerApplication        : === Got 3 tool specifications ===
+2025-07-07T03:26:01.029+02:00  INFO 27560 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server configured with 3 tools ===
+2025-07-07T03:26:01.030+02:00  INFO 27560 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server started successfully ===
+2025-07-07T03:29:35.957+02:00  INFO 2052 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 2052 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\mcp-semgrep-server-0.0.1-SNAPSHOT.jar started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:29:35.964+02:00 DEBUG 2052 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:29:35.969+02:00  INFO 2052 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:29:41.887+02:00  INFO 2052 --- [main] d.j.m.McpSemgrepServerApplication        : Started McpSemgrepServerApplication in 9.159 seconds (process running for 12.953)
+2025-07-07T03:29:41.903+02:00  INFO 2052 --- [main] d.j.m.McpSemgrepServerApplication        : === Spring context started ===
+2025-07-07T03:29:42.958+02:00  INFO 2052 --- [main] d.j.m.McpSemgrepServerApplication        : === Got 3 tool specifications ===
+2025-07-07T03:29:44.027+02:00  INFO 2052 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server configured with 3 tools ===
+2025-07-07T03:29:44.029+02:00  INFO 2052 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server started successfully ===
+2025-07-07T03:31:49.815+02:00  INFO 35240 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 35240 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\mcp-semgrep-server-0.0.1-SNAPSHOT.jar started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T03:31:49.822+02:00 DEBUG 35240 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T03:31:49.825+02:00  INFO 35240 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T03:31:54.075+02:00  INFO 35240 --- [main] d.j.m.McpSemgrepServerApplication        : Started McpSemgrepServerApplication in 6.823 seconds (process running for 9.169)
+2025-07-07T03:31:54.092+02:00  INFO 35240 --- [main] d.j.m.McpSemgrepServerApplication        : === Spring context started ===
+2025-07-07T03:31:54.812+02:00  INFO 35240 --- [main] d.j.m.McpSemgrepServerApplication        : === Got 3 tool specifications ===
+2025-07-07T03:31:55.555+02:00  INFO 35240 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server configured with 3 tools ===
+2025-07-07T03:31:55.557+02:00  INFO 35240 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server started successfully ===
+2025-07-07T09:17:13.070+02:00  INFO 35100 --- [main] d.j.m.McpSemgrepServerApplication        : Starting McpSemgrepServerApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 35100 (C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server\target\mcp-semgrep-server-0.0.1-SNAPSHOT.jar started by subol in C:\.My_Projects\mcp\AI-Code-Review-Assistant\mcp-semgrep-server)
+2025-07-07T09:17:13.071+02:00 DEBUG 35100 --- [main] d.j.m.McpSemgrepServerApplication        : Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-07-07T09:17:13.072+02:00  INFO 35100 --- [main] d.j.m.McpSemgrepServerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-07-07T09:17:14.406+02:00  INFO 35100 --- [main] d.j.m.McpSemgrepServerApplication        : Started McpSemgrepServerApplication in 2.086 seconds (process running for 2.75)
+2025-07-07T09:17:14.410+02:00  INFO 35100 --- [main] d.j.m.McpSemgrepServerApplication        : === Spring context started ===
+2025-07-07T09:17:14.591+02:00  INFO 35100 --- [main] d.j.m.McpSemgrepServerApplication        : === Got 3 tool specifications ===
+2025-07-07T09:17:14.777+02:00  INFO 35100 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server configured with 3 tools ===
+2025-07-07T09:17:14.778+02:00  INFO 35100 --- [main] d.j.m.McpSemgrepServerApplication        : === MCP Server started successfully ===
