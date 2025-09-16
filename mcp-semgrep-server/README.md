@@ -3,7 +3,7 @@
 A Spring Boot-based Model Context Protocol (MCP) server that provides automated static analysis and security scanning capabilities to LLMs through Semgrep integration.
 
 ## Project Purpose
-This project demosntrates the 
+The MCP Semgrep Server project aims to provide an automated extensible, and scalable static code analysis tool to large language models (LLMs) via the Model Context Protocol (MCP). This server enables seamless security scanning and code quality checks within AI-assisted development workflows, empowering AI tools to detect vulnerabilities, enforce coding standards, and improve software security across multiple programming languages. 
 
 ## 🚀 Features
 

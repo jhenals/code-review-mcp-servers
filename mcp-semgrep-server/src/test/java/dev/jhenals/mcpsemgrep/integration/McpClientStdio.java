@@ -22,9 +22,9 @@ import java.util.Map;
 
 @Slf4j
 public class McpClientStdio {
-
     public static void main(String[] args) {
-        String jarPath= "C:\\.My_Projects\\mcp\\AI-Code-Review-Assistant\\mcp-semgrep-server\\target\\mcp-semgrep-server-0.0.1-SNAPSHOT.jar";
+        String jarPath=
+                "C:\\.My_Projects\\mcp\\AI-Code-Review-Assistant\\mcp-semgrep-server\\target\\mcp-semgrep-server-0.0.1-SNAPSHOT.jar";
         ServerParameters  stdioParams = ServerParameters.builder("java")
 			.args("-Dspring.ai.mcp.server.transport=STDIO",
                     "-jar",
