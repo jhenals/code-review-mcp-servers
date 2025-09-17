@@ -29,7 +29,6 @@ public class ConfigurationResolver {
         EXTENSION_TO_LANGUAGE.put("tsx", "typescript");
         EXTENSION_TO_LANGUAGE.put("java", "java");
         EXTENSION_TO_LANGUAGE.put("go", "go");
-        //EXTENSION_TO_LANGUAGE.put("dockerfile", "docker");
         EXTENSION_TO_LANGUAGE.put("yaml", "yaml");
         EXTENSION_TO_LANGUAGE.put("yml", "yaml");
     }

@@ -40,7 +40,7 @@ public class McpClientDocker {
 
     public static void main(String[] args) {
         ServerParameters  stdioParams = ServerParameters.builder("docker")
-                .args("run", "-i", "--rm", "jhena/mcp-mcpsemgrep-server:latest")
+                .args("run", "-i", "--rm", "mcp-semgrep-server:latest") // docker run -i --rm imagename
                 .build();
 
         var transport = new StdioClientTransport(stdioParams);
