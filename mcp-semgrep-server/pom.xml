@@ -99,30 +99,19 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.projectlombok</groupId>
+						<artifactId>lombok</artifactId>
+						<version>1.18.38</version>
+					</dependency>
+				</dependencies>
+
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.12.1</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>compile</phase>
-						<configuration>
-							<sources>
-								<source>src/main/java/dev/jhenals/mcpsemgrep/controller</source>
-								<source>src/main/java/dev/jhenals/mcpsemgrep/exception</source>
-								<source>src/main/java/dev/jhenals/mcpsemgrep/model/domain</source>
-								<source>src/main/java/dev/jhenals/mcpsemgrep/model/request</source>
-								<source>src/main/java/dev/jhenals/mcpsemgrep/model/response</source>
-								<source>src/main/java/dev/jhenals/mcpsemgrep/parser</source>
-								<source>src/main/java/dev/jhenals/mcpsemgrep/service/analysis</source>
-								<source>src/main/java/dev/jhenals/mcpsemgrep/service/semgrep</source>
-								<source>src/main/java/dev/jhenals/mcpsemgrep/util</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
