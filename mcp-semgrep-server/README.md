@@ -219,6 +219,40 @@ cd mcp-semgrep-server
 ### MCP Client Integration Test
 This project include two example clients demonstrating how to interact with the MCP server using different mechanisms:
 
+
+#### **MCPClientStdio**
+This client demonstrates starting the MCP server as a local Java process using stdio transport
+
+_Prerequisites:_
+* Java installed
+* The MCP server jar is built locally (run `./mvnw clean install -DskipTests` to build)
+* Update the jarPath variable in McpClientStdio to point to your built jar file
+
+_How to run:_
+
+Option 1: Use Maven exec plugin to run the test class.
+```bash
+./mvnw test-compile
+./mvnw exec:java -Dexec.mainClass=dev.jhenals.mcpsemgrep.integration.McpClientStdio -Dexec.classpathScope=test
+
+```
+
+Option 2: Run from IDE
+* If you use an IDE like IntelliJ IDEA or Eclipse, you can right-click the MCPClientStdio class and run it as a Java application.
+
+![img_2.png](img_2.png)
+
+This will:
+* Start the MCP server as a local Java process
+* Initialize the client connection
+* List avaialable tools
+* Run multiple tests including:
+    * Basic Semgrep scan
+    * Security check scan
+    * Custom rule scan
+* Log the results of each test
+
+
 #### **MCPClientDocker**
 This client demonstrates starting MCP server inside a Docker container and communicating with it via standard input/output
 
@@ -239,36 +273,6 @@ This will:
 * Log the results
 
 ![img_1.png](img_1.png)
-
-#### **MCPClientStdio**
-This client demonstrates starting the MCP server as a local Java process using stdio transport
-
-_Prerequisites:_
-* Java installed
-* The MCP server jar is built locally (run `./mvnw clean install -DskipTests` to build)
-* Update the jarPath variable in McpClientStdio to point to your built jar file
-
-_How to run:_
-Option 1: Run from IDE
-* If you use an IDE like IntelliJ IDEA or Eclipse, you can right-click the MCPClientStdio class and run it as a Java application. 
-![img_2.png](img_2.png)
-
-Option 2: Use Maven exec plugin to run the test class
-
-```bash
-./mvnw test-compile
-./mvnw exec:java -Dexec.mainClass=dev.jhenals.mcpsemgrep.integration.McpClientStdio -Dexec.classpathScope=test
-
-```
-This will: 
-* Start the MCP server as a local Java process
-* Initialize the client connection
-* List avaialable tools
-* Run multiple tests including: 
-  * Basic Semgrep scan
-  * Security check scan
-  * Custom rule scan
-* Log the results of each test
 
 Notes:
 * Both clients use a 10-minute request timeout and enable client capabilities such as roots and sampling. 

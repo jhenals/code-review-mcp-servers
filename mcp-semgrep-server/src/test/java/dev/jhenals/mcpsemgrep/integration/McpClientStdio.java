@@ -24,7 +24,7 @@ import java.util.Map;
 public class McpClientStdio {
     public static void main(String[] args) {
         String jarPath=
-                "C:\\.My_Projects\\mcp\\AI-Code-Review-Assistant\\mcp-semgrep-server\\target\\mcp-semgrep-server-0.0.1-SNAPSHOT.jar";
+                "C:\\path\\to\\AI-Code-Review-Assistant\\mcp-semgrep-server\\target\\mcp-semgrep-server-0.0.1-SNAPSHOT.jar"; //update the jarPath
         ServerParameters  stdioParams = ServerParameters.builder("java")
 			.args("-Dspring.ai.mcp.server.transport=STDIO",
                     "-jar",
