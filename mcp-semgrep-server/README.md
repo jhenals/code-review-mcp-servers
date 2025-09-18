@@ -212,7 +212,7 @@ The project includes comprehensive unit tests for:
 Run the test suite:
 
 ```bash
-cd mcp-mcpsemgrep-server
+cd mcp-semgrep-server
 ./mvnw test
 ```
 
