@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "dev.jhenals.mcpsemgrep")
 public class McpSemgrepServerApplication {
 
 	public static void main(String[] args) {
