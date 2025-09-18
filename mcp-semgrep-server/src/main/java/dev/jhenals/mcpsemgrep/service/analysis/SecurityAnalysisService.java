@@ -7,13 +7,11 @@ import dev.jhenals.mcpsemgrep.parser.SemgrepResultParser;
 import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
 import dev.jhenals.mcpsemgrep.service.semgrep.SemgrepExecutor;
 import dev.jhenals.mcpsemgrep.util.FileUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 
-@Slf4j
 @Service
 public class SecurityAnalysisService {
     private final SemgrepExecutor semgrepExecutor;

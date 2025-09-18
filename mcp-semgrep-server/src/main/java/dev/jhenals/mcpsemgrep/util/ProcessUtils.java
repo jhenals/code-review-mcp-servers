@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -14,9 +15,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
+
 @Component
 public class ProcessUtils {
+    private static final Logger log = LoggerFactory.getLogger(ProcessUtils.class);
 
     public static final int MAX_OUTPUT_LINES = 10000;
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -27,7 +29,7 @@ public class ProcessUtils {
     }
 
     public JsonNode executeCommand(List<String> command, int timeOutInMinutes)throws McpAnalysisException, IOException{
-        log.info("Executing command: {}", String.join(" ", command));
+        //log.info("Executing command: {}", String.join(" ", command));
 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true);

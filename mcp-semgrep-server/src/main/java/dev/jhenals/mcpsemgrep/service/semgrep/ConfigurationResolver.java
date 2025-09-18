@@ -3,7 +3,8 @@ package dev.jhenals.mcpsemgrep.service.semgrep;
 import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
 import dev.jhenals.mcpsemgrep.model.domain.CodeFile;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @Service
 public class ConfigurationResolver {
 
     @Autowired
     private SemgrepConfigurationManager configManager;
+
+    private static final Logger log = LoggerFactory.getLogger(SemgrepConfigurationManager.class);
 
     // Language detection mappings
     private static final Map<String, String> EXTENSION_TO_LANGUAGE = new HashMap<>();
@@ -41,8 +43,7 @@ public class ConfigurationResolver {
      * Resolve configuration for general code analysis
      */
     public String resolveGeneralConfig(String userConfig, CodeFile codeFile) {
-        log.debug("Resolving general config - user: '{}', file: '{}'",
-                userConfig, codeFile != null ? codeFile.getFileName() : "null");
+        log.debug("Resolving general config - user: '{}', file: '{}'",  userConfig, codeFile != null ? codeFile.getFileName() : "null");
 
         // 1. Try user-provided config first
         String resolvedConfig = tryUserConfig(userConfig);
@@ -65,8 +66,7 @@ public class ConfigurationResolver {
      * Resolve configuration for security analysis (prioritizes security rulesets)
      */
     public String resolveSecurityConfig(String userConfig, CodeFile codeFile) {
-        log.debug("Resolving security config - user: '{}', file: '{}'",
-                userConfig, codeFile != null ? codeFile.getFileName() : "null");
+       // log.debug("Resolving security config - user: '{}', file: '{}'",  userConfig, codeFile != null ? codeFile.getFileName() : "null");
 
         // 1. Try user-provided config first
         String resolvedConfig = tryUserConfig(userConfig);
@@ -148,8 +148,7 @@ public class ConfigurationResolver {
         String language = detectLanguage(codeFile.getFileName());
         String config = getLanguageSpecificConfig(language, securityFocused);
 
-        log.debug("Smart detection for '{}': language='{}', config='{}', security='{}'",
-                codeFile.getFileName(), language, config, securityFocused);
+        log.debug("Smart detection for '{}': language='{}', config='{}', security='{}'",  codeFile.getFileName(), language, config, securityFocused);
 
         return config;
     }

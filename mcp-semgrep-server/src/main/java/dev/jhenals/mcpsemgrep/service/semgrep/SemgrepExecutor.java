@@ -3,7 +3,8 @@ package dev.jhenals.mcpsemgrep.service.semgrep;
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
 import dev.jhenals.mcpsemgrep.util.ProcessUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Slf4j
 @Service
 public class SemgrepExecutor {
     private final ProcessUtils processUtils;
@@ -19,6 +19,9 @@ public class SemgrepExecutor {
 
     private static final String SEMGREP_COMMAND = "semgrep";
     private static final int SEMGREP_TIMEOUT_MINUTES = 10;
+
+    private static final Logger log = LoggerFactory.getLogger(SemgrepExecutor.class);
+
 
     public SemgrepExecutor(ProcessUtils processUtils, SemgrepConfigurationManager configurationManager){
         this.processUtils= processUtils;
@@ -57,8 +60,7 @@ public class SemgrepExecutor {
     }
 
     public JsonNode executeAnalysisWithCustomRules(String filePath, String ruleFilePath) throws IOException, McpAnalysisException {
-        log.info("Executing Semgrep analysis with custom rules - File: {}, Rules: {}",
-                filePath, ruleFilePath);
+        log.info("Executing Semgrep analysis with custom rules - File: {}, Rules: {}", filePath, ruleFilePath);
 
         validateSemgrepAvailability();
 

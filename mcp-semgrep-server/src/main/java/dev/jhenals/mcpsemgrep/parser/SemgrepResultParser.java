@@ -1,18 +1,18 @@
 package dev.jhenals.mcpsemgrep.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
 import dev.jhenals.mcpsemgrep.model.domain.Finding;
 import dev.jhenals.mcpsemgrep.model.response.AnalysisResult;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Slf4j
 @Component
 public class SemgrepResultParser {
+    private static final Logger log = LoggerFactory.getLogger(SemgrepResultParser.class);
 
     public AnalysisResult parseAnalysisResult(JsonNode semgrepOutput, String scanType) throws McpAnalysisException {
         try {

@@ -7,18 +7,19 @@ import dev.jhenals.mcpsemgrep.parser.SemgrepResultParser;
 import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
 import dev.jhenals.mcpsemgrep.service.semgrep.SemgrepExecutor;
 import dev.jhenals.mcpsemgrep.util.FileUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 
-@Slf4j
 @Service
 public class CodeAnalysisService {
     private final SemgrepExecutor semgrepExecutor;
     private final SemgrepResultParser resultParser;
     private final FileUtils fileUtils;
+    private static final Logger log = LoggerFactory.getLogger(CodeAnalysisService.class);
 
     public CodeAnalysisService(SemgrepExecutor semgrepExecutor,
                                SemgrepResultParser resultParser,
@@ -30,7 +31,7 @@ public class CodeAnalysisService {
 
 
     public AnalysisResult analyzeCode(CodeAnalysisRequest request)
-            throws McpAnalysisException, IOException {
+            throws McpAnalysisException {
 
         File tempFile = null;
         try {
@@ -55,7 +56,7 @@ public class CodeAnalysisService {
     }
 
     public AnalysisResult analyzeCodeWithCustomRules(CodeAnalysisRequest request)
-            throws McpAnalysisException, IOException {
+            throws McpAnalysisException {
 
         if (request.getCustomRule() == null || request.getCustomRule().trim().isEmpty()) {
             throw new McpAnalysisException("MISSING_CUSTOM_RULE",
@@ -68,8 +69,7 @@ public class CodeAnalysisService {
             tempCodeFile = fileUtils.createTemporaryFile(request.getCodeFile());
             tempRuleFile = fileUtils.createTemporaryRuleFile(request.getCustomRule());
 
-            log.debug("Created temporary files - Code: {}, Rule: {}",
-                    tempCodeFile.getAbsolutePath(), tempRuleFile.getAbsolutePath());
+            log.debug("Created temporary files - Code: {}, Rule: {}", tempCodeFile.getAbsolutePath(), tempRuleFile.getAbsolutePath());
 
             JsonNode rawResult = semgrepExecutor.executeAnalysisWithCustomRules(
                     tempCodeFile.getAbsolutePath(),
@@ -82,8 +82,7 @@ public class CodeAnalysisService {
             return result;
 
         } catch (Exception e) {
-            log.error("Error during custom rule analysis for: {}",
-                    request.getCodeFile().getFileName(), e);
+            log.error("Error during custom rule analysis for: {}", request.getCodeFile().getFileName(), e);
             throw new McpAnalysisException("CUSTOM_ANALYSIS_FAILED",
                     "Failed to analyze code with custom rules: " + e.getMessage());
         } finally {

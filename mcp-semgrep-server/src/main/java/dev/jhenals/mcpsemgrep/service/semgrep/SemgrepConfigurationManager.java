@@ -1,16 +1,18 @@
 package dev.jhenals.mcpsemgrep.service.semgrep;
 
 import dev.jhenals.mcpsemgrep.exception.McpAnalysisException;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Slf4j
 @Service
 public class SemgrepConfigurationManager {
+    private static final Logger log = LoggerFactory.getLogger(SemgrepConfigurationManager.class);
+
     private static final List<String> VALID_PRESET_CONFIGS = Arrays.asList(
             "auto",
             "p/security",
